@@ -11,7 +11,7 @@ def create_server():
         )
         print('MySQL Database connection successful')
     except:
-        pass
+        print('MySQL Database connection unsuccessful')
     return db
 
 
@@ -79,35 +79,3 @@ def build_table_contractor():
 
 
 build_table_contractor()
-
-
-def Login_user(email, password):
-    array_user = []
-    output = []
-    cursor = builder.cursor()
-    sql = '''
-        SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name FROM onemeasure.Contractors
-        FROM Users
-        INNER JOIN Contractors ON Contractors.user_id=Users.user_id;
-        '''
-    # val = (email,)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    for i in result:
-        print(i)
-    #     val = json.dumps(i)
-    #     array_user.append(val.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"\r\])' + U'\xa8')))
-    # 
-    # print(array_user)
-
-    # if username == 'kong' and password == '1234':
-    #     check = True
-    #     output.append(
-    #         {
-    #             'userid': array_user[len(array_user) - 1],
-    #             'email': email,
-    #             'password': password,
-    #             'check': check
-    #         }
-    #     )
-    #     return output
