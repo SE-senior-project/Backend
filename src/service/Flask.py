@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import cross_origin
-from Config import *
+from src.config.InitApp import *
 
 # import json
 # import mysql.connector
@@ -20,8 +20,8 @@ app = Flask(__name__)
 def Login():
     email = request.json['email']
     password = request.json['password']
-    print(email)
-    print(password)
+    print('Email :'+str(email))
+    print('Password :'+str(password))
 
     return jsonify(Login_user(email, password))
 
