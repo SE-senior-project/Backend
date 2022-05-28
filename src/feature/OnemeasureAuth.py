@@ -50,6 +50,7 @@ def Login_user(email, password):
         )
     except:
         print("Connect fail")
+        check = False
         output.append({
             'check': check
         })
