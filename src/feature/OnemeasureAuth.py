@@ -2,7 +2,7 @@ from src.config.InitApp import *
 import json
 
 
-def Login_user(email, password):
+def login_user(email, password):
     print('Email :' + str(email))
     print('Password :' + str(password))
     output = []
@@ -56,3 +56,42 @@ def Login_user(email, password):
         })
 
     return output
+
+
+def add_user():
+    cursor = builder.cursor()
+    try:
+        sql_register = '''
+              INSERT INTO `Users` ( `role`,`status`) VALUES ('contractor' ,0)
+              '''
+        cursor.execute(sql_register)
+        builder.commit()
+        print('insert pass')
+    except:
+        print('insert fail')
+
+
+def register_user(first_name, last_name, email, password):
+    print('User_Firstname :' + str(first_name))
+    print('User_Lastname :' + str(last_name))
+    print('User_Email :' + str(email))
+    print('User_Password :' + str(password))
+    add_user()
+    cursor = builder.cursor()
+    sql_latest_user_id = '''
+              SELECT user_id
+              FROM Users
+              ORDER BY user_id  ASC '''
+    cursor.execute(sql_latest_user_id)
+    result = cursor.fetchall()
+    temp = json.dumps(result[len(result) - 1])
+    temp = temp.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\,!"\r\])' + U'\xa8'))
+    temp = int(temp)
+    print(temp)
+
+    sql_register = '''
+      INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s)
+      '''
+    val = (first_name, last_name, email, password, temp)
+    cursor.execute(sql_register, val)
+    builder.commit()
