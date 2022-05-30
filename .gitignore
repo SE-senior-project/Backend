@@ -1,7 +1,5 @@
-.DS_Store
-node_modules
-/dist
-
+__pycache__
+ *.pyc
 
 # local env files
 .env.local
@@ -14,8 +12,6 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Editor directories and files
-.*
-__pycache__/
 .idea
 .vscode
 *.suo
