@@ -6,6 +6,10 @@ from src.config.InitApp import *
 
 def update_external_data(ml, yl):
     # currentMonth = datetime.now().month]
+    ml = str(ml)
+    yl = str(yl)
+    print('month :' + ml)
+    print('year :' + yl)
     try:
         cursor = builder.cursor()
         url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'

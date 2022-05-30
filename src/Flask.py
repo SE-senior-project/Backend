@@ -25,13 +25,13 @@ def register():
     return jsonify(register_user(first_name, last_name, email, password))
 
 
-###################### Project Management #########################
+###################### Admin #########################
 
 @app.route("/External", methods=["POST"])
 @cross_origin()
 def fetch_external_data():
-    month = request.json['first_name']
-    year = request.json['last_name']
+    month = request.json['month']
+    year = request.json['year']
     return jsonify(update_external_data(month, year))
 
 
