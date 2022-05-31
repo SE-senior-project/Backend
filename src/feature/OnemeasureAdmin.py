@@ -59,3 +59,23 @@ def unapprove_user(user_id):
         print('Unpproved fail')
 
 
+def active_contractor(contractor_id):
+    try:
+        cursor = builder.cursor()
+        sql_active_contractor = '''UPDATE Contractors SET active = 1  WHERE contractor_id = %s'''
+        cursor.execute(sql_active_contractor, (contractor_id,))
+        builder.commit()
+        print('Actived user')
+    except:
+        print('Active fail')
+
+
+def disable_contractor(contractor_id):
+    try:
+        cursor = builder.cursor()
+        sql_disable_contractor = '''UPDATE Contractors SET active = 0  WHERE contractor_id = %s'''
+        cursor.execute(sql_disable_contractor, (contractor_id,))
+        builder.commit()
+        print('Disabled user')
+    except:
+        print('Disable fail')
