@@ -153,12 +153,13 @@ def build_table_project_material():
         project_material = '''
                      CREATE TABLE ProjectMaterials (
                      project_material_id INT AUTO_INCREMENT PRIMARY KEY,
-                     project_material_name VARCHAR(255) NOT NULL
+                     project_material_name VARCHAR(255) NOT NULL,
+                     project_material_price VARCHAR(255) NOT NULL
                     )
                      '''
         cursor.execute(project_material)
         insert_project_material = '''
-                  INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`) VALUES (NULL ,'ท่อประปา');
+                  INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค','1794.39');
                   '''
         cursor.execute(insert_project_material)
         builder.commit()
@@ -186,7 +187,7 @@ def build_table_project():
                  '''
         cursor.execute(project)
         insert_contractor = '''
-                INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`date_line`,`contractor_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1);
+                INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`date_line`,`contractor_id`,`project_material_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1,1);
                 '''
         cursor.execute(insert_contractor)
         builder.commit()
