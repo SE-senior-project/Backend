@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import cross_origin
-from src.feature.OnemeasureAuth import *
-from src.feature.OnemeasureAdmin import *
+from src.feature.Auth import *
+from src.feature.Admin import *
 
 app = Flask(__name__)
 
@@ -25,14 +25,42 @@ def register():
     return jsonify(register_user(first_name, last_name, email, password))
 
 
-###################### Project Management #########################
+###################### Admin #########################
 
 @app.route("/", methods=["POST"])
 @cross_origin()
 def fetch_external_data():
-    month = request.json['first_name']
-    year = request.json['last_name']
+    month = request.json['month']
+    year = request.json['year']
     return jsonify(update_external_data(month, year))
+
+
+@app.route("/Approve", methods=["POST"])
+@cross_origin()
+def approve_new_user():
+    user_id = request.json['user_id']
+    return jsonify(approve_user(user_id))
+
+
+@app.route("/Unapprove", methods=["POST"])
+@cross_origin()
+def unapprove_new_user():
+    user_id = request.json['user_id']
+    return jsonify(unapprove_user(user_id))
+
+
+@app.route("/Active", methods=["POST"])
+@cross_origin()
+def active_current_contractor():
+    contractor_id = request.json['contractor_id ']
+    return jsonify(active_contractor(contractor_id))
+
+
+@app.route("/Disable", methods=["POST"])
+@cross_origin()
+def disable_current_contractor():
+    contractor_id = request.json['contractor_id']
+    return jsonify(disable_contractor(contractor_id))
 
 
 if __name__ == '__main__':
