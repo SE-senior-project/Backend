@@ -23,6 +23,10 @@ builder = create_server()
 def drop_table():
     try:
         cursor = builder.cursor()
+        delete_project = '''DROP TABLE IF EXISTS Projects;'''
+        cursor.execute(delete_project)
+        delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
+        cursor.execute(delete_project_material)
         delete_contractor = '''DROP TABLE IF EXISTS Contractors;'''
         cursor.execute(delete_contractor)
         delete_user = '''DROP TABLE IF EXISTS Users;'''
@@ -141,15 +145,54 @@ def build_table_material():
 
 build_table_material()
 
+
 # ProjectMaterial_Entity
-# def build_table_project_material():
-#     cursor = builder.cursor()
-#     project_material = '''
-#              CREATE TABLE ProjectMaterials (
-#              material_id INT AUTO_INCREMENT PRIMARY KEY,
-#              material_name VARCHAR(255) NOT NULL,
-#              material_price INT NOT NULL,
-#              )
-#              '''
-#     cursor.execute(project_material)
-#     builder.commit()
+def build_table_project_material():
+    try:
+        cursor = builder.cursor()
+        project_material = '''
+                     CREATE TABLE ProjectMaterials (
+                     project_material_id INT AUTO_INCREMENT PRIMARY KEY,
+                     project_material_name VARCHAR(255) NOT NULL
+                    )
+                     '''
+        cursor.execute(project_material)
+        insert_project_material = '''
+                  INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`) VALUES (NULL ,'ท่อประปา');
+                  '''
+        cursor.execute(insert_project_material)
+        builder.commit()
+        print('Created ProjectMaterial')
+    except:
+        print('Create fail')
+
+
+build_table_project_material()
+
+
+# Project_Entity
+def build_table_project():
+    try:
+        cursor = builder.cursor()
+        project = '''
+                 CREATE TABLE Projects (
+                 project_id INT AUTO_INCREMENT PRIMARY KEY,
+                 project_name VARCHAR(255) NOT NULL,
+                 project_description VARCHAR(1000) NOT NULL,
+                 customer_name VARCHAR(255) NOT NULL,
+                 date_line DATE NOT NULL,
+                 contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE,
+                 project_material_id INT, FOREIGN KEY (project_material_id) REFERENCES ProjectMaterials(project_material_id)ON DELETE  CASCADE ON UPDATE CASCADE)
+                 '''
+        cursor.execute(project)
+        insert_contractor = '''
+                INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`date_line`,`contractor_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1);
+                '''
+        cursor.execute(insert_contractor)
+        builder.commit()
+        print('Created Project')
+    except:
+        print('Create fail')
+
+
+build_table_project()
