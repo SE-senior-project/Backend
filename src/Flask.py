@@ -27,7 +27,7 @@ def register():
 
 ###################### Project Management #########################
 
-@app.route("/External", methods=["POST"])
+@app.route("/", methods=["POST"])
 @cross_origin()
 def fetch_external_data():
     month = request.json['first_name']
