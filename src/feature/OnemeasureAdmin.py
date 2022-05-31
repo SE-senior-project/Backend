@@ -33,4 +33,29 @@ def update_external_data(ml, yl):
     except:
         print('Update external data fail')
 
+
 # update_external_data('2', '2565')
+
+
+def approve_user(user_id):
+    try:
+        cursor = builder.cursor()
+        sql_approve_user = '''UPDATE Users SET status = 1  WHERE user_id = %s'''
+        cursor.execute(sql_approve_user, (user_id,))
+        builder.commit()
+        print('Approved user')
+    except:
+        print('Approve fail')
+
+
+def unapprove_user(user_id):
+    try:
+        cursor = builder.cursor()
+        sql_unapprove_user = '''DELETE FROM Users   WHERE user_id = %s'''
+        cursor.execute(sql_unapprove_user, (user_id,))
+        builder.commit()
+        print('Unpproved user')
+    except:
+        print('Unpproved fail')
+
+
