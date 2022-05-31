@@ -1,4 +1,4 @@
-from src.config.InitApp import *
+from src.config.Service import *
 import json
 
 
@@ -9,7 +9,6 @@ def login_user(email, password):
     prepare_output = []
     array_user_login = []
     tran_tuple = ""
-    check = False
     cursor = builder.cursor()
     try:
         sql_login = '''
@@ -22,8 +21,10 @@ def login_user(email, password):
         '''
         val = (email, password)
         cursor.execute(sql_login, val)
+
         print("Pass valid")
         result = cursor.fetchall()
+        df = pd.read_sql(sql, cnxn)
         print('All data :' + str(result))
         for i in result:
             val = json.dumps(i)

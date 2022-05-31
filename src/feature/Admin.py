@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 from datetime import datetime
-from src.config.InitApp import *
+from src.config.Service import *
 
 
 def update_external_data(ml, yl):

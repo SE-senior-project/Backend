@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 
 ###################### Auth #########################
+
 @app.route("/Login", methods=["POST"])
 @cross_origin()
 def login():
