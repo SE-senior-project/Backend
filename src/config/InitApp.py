@@ -1,9 +1,8 @@
-import mysql.connector
 import requests
-import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from src.config.Service import *
+import pandas as pd
 
 
 def drop_table():
