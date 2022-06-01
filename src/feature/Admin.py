@@ -1,8 +1,6 @@
+from src.config.Service import *
 import requests
 import pandas as pd
-from datetime import datetime
-from src.config.InitApp import *
-
 
 def update_external_data(ml, yl):
     # currentMonth = datetime.now().month]
