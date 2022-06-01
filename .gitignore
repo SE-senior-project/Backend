@@ -1,21 +1,5 @@
-__pycache__
- *.pyc
-
-# local env files
-.env.local
-.env.*.local
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+﻿.idea
+app/src/__pycache__
+app/src/entity/user/__pycache__
+app/src/routes/__pycache__
+*.pyc
