@@ -1,14 +1,13 @@
 from src.config.Service import *
 import json
+import pandas as pd
+import jwt
 
 
 def login_user(email, password):
     print('Email :' + str(email))
     print('Password :' + str(password))
     output = []
-    prepare_output = []
-    array_user_login = []
-    tran_tuple = ""
     cursor = builder.cursor()
     try:
         sql_login = '''
@@ -24,31 +23,20 @@ def login_user(email, password):
 
         print("Pass valid")
         result = cursor.fetchall()
-        df = pd.read_sql(sql, cnxn)
-        print('All data :' + str(result))
-        for i in result:
-            val = json.dumps(i)
-            array_user_login.append(
-                val.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"\r\])' + U'\xa8')))
-
-        for list_return in array_user_login:
-            tran_tuple += list_return
-
-        array_tran = tran_tuple.split()
-        for i in array_tran:
-            ans = i.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%,\\!"\r\,])' + U'\xa8'))
-            prepare_output.append(ans)
-        check = True
-        output.append(
-            {
-                'contractor_id': prepare_output[0],
-                'first_name': prepare_output[1],
-                'last_name': prepare_output[2],
-                'role': prepare_output[3],
-                'status': prepare_output[4],
-                'check': check
-            }
+        df = pd.DataFrame(result,
+                          columns=['contractor_id', 'first_name', 'last_name', 'role', 'status'])
+        df['check'] = True
+        payload_data = {
+            "password": password,
+            "email": email
+        }
+        token = jwt.encode(
+            payload_data,
+            key='my_super_secret'
         )
+        df['token'] = token
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
     except:
         print("Connect fail")
         check = False
