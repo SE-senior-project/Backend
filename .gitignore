@@ -1,5 +1,4 @@
 ﻿.idea
 app/src/__pycache__
-app/src/entity/user/__pycache__
-app/src/routes/__pycache__
+*/__pycache__
 *.pyc
