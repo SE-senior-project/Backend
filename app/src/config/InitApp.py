@@ -1,13 +1,14 @@
-import requests
-from app.src.config.Service import *
 import pandas as pd
+import requests
+
+from app.src.config.Service import *
 
 
 class InitApp:
     @staticmethod
     def drop_table():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             delete_project = '''DROP TABLE IF EXISTS Projects;'''
             cursor.execute(delete_project)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
@@ -18,18 +19,16 @@ class InitApp:
             cursor.execute(delete_user)
             delete_material = '''DROP TABLE IF EXISTS Materials;'''
             cursor.execute(delete_material)
-            Service.builder.commit()
+            builder.commit()
             print('Already droup')
         except:
             print('Droup fail')
-
-    drop_table()
 
     # User_Entity
     @staticmethod
     def build_table_user():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             delete_user = '''DROP TABLE IF EXISTS Users;'''
             cursor.execute(delete_user)
             user = '''
@@ -40,22 +39,21 @@ class InitApp:
                 )
                 '''
             cursor.execute(user)
+
             insert_user = '''
-              INSERT INTO `Users` ( `user_id`,`role`,`status`) VALUES (NULL ,'contractor', 1),(NULL ,'contractor', 0);
+              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'contractor', 1),(NULL ,'contractor', 0);
               '''
             cursor.execute(insert_user)
-            Service.builder.commit()
+            builder.commit()
             print('Created User')
         except:
             print('Create fail')
-
-    build_table_user()
 
     # Contractor_Entity
     @staticmethod
     def build_table_contractor():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             contractor = '''
                     CREATE TABLE Contractors (
                     contractor_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,21 +71,19 @@ class InitApp:
             cursor.execute(contractor)
 
             insert_contractor = '''
-              INSERT INTO `Contractors` ( `contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com','kong1234',1, 1),(NULL ,'fax','phonmongkhon','fax@gmail.com','fax1234',0, 2);
+              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com','kong1234',1, 1),(NULL ,'fax','phonmongkhon','fax@gmail.com','fax1234',0, 2);
               '''
             cursor.execute(insert_contractor)
-            Service.builder.commit()
+            builder.commit()
             print('Created Contractor')
         except:
             print('Create fail')
-
-    build_table_contractor()
 
     # Material_Entity
     @staticmethod
     def build_table_material():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             material = '''
                      CREATE TABLE Materials (
                      material_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,25 +108,23 @@ class InitApp:
             material_price = df[3].to_numpy()
             n = len(material_name) - 1
             insert_material = '''
-                           INSERT INTO `Materials` (`material_name`,`material_price`,`material_unit`) VALUES (%s,%s,%s);
+                           INSERT INTO Materials (`material_name`,`material_price`,`material_unit`) VALUES (%s,%s,%s);
                            '''
             for i in range(1, n, 1):
                 val_name = str(material_name[i])
                 val_unit = str(material_unit[i])
                 val_price = str(material_price[i])
                 cursor.execute(insert_material, (val_name, val_price, val_unit))
-            Service.builder.commit()
+            builder.commit()
             print('Created Material')
         except:
             print('Create fail')
-
-    build_table_material()
 
     # ProjectMaterial_Entity
     @staticmethod
     def build_table_project_material():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             project_material = '''
                          CREATE TABLE ProjectMaterials (
                          project_material_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -143,18 +137,16 @@ class InitApp:
                       INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค','1794.39');
                       '''
             cursor.execute(insert_project_material)
-            Service.builder.commit()
+            builder.commit()
             print('Created ProjectMaterial')
         except:
             print('Create fail')
-
-    build_table_project_material()
 
     # Project_Entity
     @staticmethod
     def build_table_project():
         try:
-            cursor = Service.builder.cursor()
+            cursor = builder.cursor()
             project = '''
                      CREATE TABLE Projects (
                      project_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -170,9 +162,15 @@ class InitApp:
                     INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`date_line`,`contractor_id`,`project_material_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1,1);
                     '''
             cursor.execute(insert_contractor)
-            Service.builder.commit()
+            builder.commit()
             print('Created Project')
         except:
             print('Create fail')
 
-    build_table_project()
+
+InitApp.drop_table()
+InitApp.build_table_user()
+InitApp.build_table_contractor()
+InitApp.build_table_material()
+InitApp.build_table_project_material()
+InitApp.build_table_project()
