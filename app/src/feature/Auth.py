@@ -85,7 +85,7 @@ class Auth(object):
         print(temp)
 
         sql_register = '''
-          INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active,``user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
+          INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
           '''
         val = (first_name, last_name, email, password, 0, temp)
         cursor.execute(sql_register, val)
