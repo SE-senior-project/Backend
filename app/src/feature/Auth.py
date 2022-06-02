@@ -2,11 +2,14 @@ from app.src.config.Service import *
 import json
 import pandas as pd
 import jwt
+import hashlib
 
 
 class Auth(object):
     @staticmethod
     def login_user(email, password):
+        # email = 'kong@gmail.com'
+        # password = 'kong1234'
         print('Email :' + str(email))
         print('Password :' + str(password))
         cursor = builder.cursor()
@@ -18,11 +21,13 @@ class Auth(object):
                 WHERE Contractors.email = %s 
                 AND Contractors.password = %s 
             '''
+        password = hashlib.md5(password.encode()).hexdigest()
         val = (email, password)
         cursor.execute(sql_login, val)
 
         print("Pass valid")
         result = cursor.fetchall()
+        print(result)
         df = pd.DataFrame(result,
                           columns=['contractor_id', 'first_name', 'last_name', 'role', 'status'])
         df['check'] = True
@@ -35,7 +40,14 @@ class Auth(object):
             key='my_super_secret'
         )
         df['token'] = token
+        user = [{
+            'id': df['contractor_id'].iloc[0],
+            'username': df['first_name'].iloc[0]
+        }]
+        df['user'] = user
+
         json_result = df.to_json(orient="records")
+        print(json_result)
         output = json.loads(json_result)
 
         return output
@@ -73,8 +85,8 @@ class Auth(object):
         print(temp)
 
         sql_register = '''
-          INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s)
+          INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active,``user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
           '''
-        val = (first_name, last_name, email, password, temp)
+        val = (first_name, last_name, email, password, 0, temp)
         cursor.execute(sql_register, val)
         builder.commit()
