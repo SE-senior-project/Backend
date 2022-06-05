@@ -6,9 +6,6 @@ import pandas as pd
 class Admin(object):
     @staticmethod
     def update_external_data(ml, yl):
-        # currentMonth = datetime.now().month]
-        ml = str(ml)
-        yl = str(yl)
         print('month :' + ml)
         print('year :' + yl)
         try:
@@ -24,8 +21,12 @@ class Admin(object):
             }
             r = requests.post(url, data=payload).content
             df = pd.read_html(r)[0]
+            df.dropna(inplace=True)
+            df.drop(df.index[14:37], inplace=True)
+            df.drop(df.index[27:29], inplace=True)
+            df.drop(df.index[91:100], inplace=True)
             material_price = df[3].to_numpy()
-            n = len(material_price) - 1
+            n = len(material_price)
             sql_update_external_data = '''UPDATE Materials SET material_price = %s  WHERE material_id = %s'''
             for i in range(1, n, 1):
                 cursor.execute(sql_update_external_data, (material_price[i], i))

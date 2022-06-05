@@ -5,15 +5,17 @@
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:password@127.0.0.1/onemeasure'
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # db = SQLAlchemy(app)
-# InitApp()
+
 
 from flask import Flask, request, jsonify
+# from src.config.InitApp import InitApp
 from src.feature.Auth import *
-from src.feature.Admin import Admin
+from src.feature.Admin import *
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+# InitApp
 
 
 ###################### Auth #########################

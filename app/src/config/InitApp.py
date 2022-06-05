@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from app.src.config.Service import *
-import re
+import hashlib
 
 
 class InitApp:
@@ -13,6 +13,8 @@ class InitApp:
             cursor.execute(delete_project)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
             cursor.execute(delete_project_material)
+            delete_admin = '''DROP TABLE IF EXISTS Admins;'''
+            cursor.execute(delete_admin)
             delete_contractor = '''DROP TABLE IF EXISTS Contractors;'''
             cursor.execute(delete_contractor)
             delete_user = '''DROP TABLE IF EXISTS Users;'''
@@ -41,7 +43,7 @@ class InitApp:
             cursor.execute(user)
 
             insert_user = '''
-              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'contractor', 1),(NULL ,'contractor', 0);
+              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0);
               '''
             cursor.execute(insert_user)
             builder.commit()
@@ -71,11 +73,45 @@ class InitApp:
             cursor.execute(contractor)
 
             insert_contractor = '''
-              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com','kong1234',1, 1),(NULL ,'fax','phonmongkhon','fax@gmail.com','fax1234',0, 2);
+              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5);
               '''
-            cursor.execute(insert_contractor)
+            pass1 = 'kong1234'
+            pass2 = 'fax1234'
+            pass1 = hashlib.md5(pass1.encode()).hexdigest()
+            pass2 = hashlib.md5(pass2.encode()).hexdigest()
+            cursor.execute(insert_contractor, (pass1, pass2))
             builder.commit()
             print('Created Contractor')
+        except:
+            print('Create fail')
+
+    # Admin_Entity
+    @staticmethod
+    def build_table_admin():
+        try:
+            cursor = builder.cursor()
+            admin = '''
+                       CREATE TABLE Admins (
+                       admin_id INT AUTO_INCREMENT PRIMARY KEY,
+                       email VARCHAR(255) NOT NULL,
+                       password VARCHAR(255) NOT NULL,
+                       user_id INT,
+                       CONSTRAINT FOREIGN KEY (user_id) REFERENCES Users(user_id)
+                       ON DELETE  CASCADE
+                       ON UPDATE CASCADE 
+                       )
+                       '''
+            cursor.execute(admin)
+
+            insert_admin = '''
+                 INSERT INTO Admins (admin_id,email,password,user_id) VALUES (NULL ,'admin@gmail.com', %s ,1),(NULL ,'admin_1@gmail.com', %s ,2),(NULL ,'admin_2@gmail.com', %s ,3);
+                 '''
+            admin_pass = 'admin1234'
+            admin_pass = hashlib.md5(admin_pass.encode()).hexdigest()
+            val = (admin_pass, admin_pass, admin_pass)
+            cursor.execute(insert_admin, val)
+            builder.commit()
+            print('Created Admin')
         except:
             print('Create fail')
 
@@ -360,6 +396,7 @@ class InitApp:
 
 InitApp.drop_table()
 InitApp.build_table_user()
+InitApp.build_table_admin()
 InitApp.build_table_contractor()
 InitApp.build_table_material()
 InitApp.build_table_project_material()
