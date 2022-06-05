@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
-
 from app.src.config.Service import *
+import re
 
 
 class InitApp:
@@ -89,7 +89,9 @@ class InitApp:
                      material_id INT AUTO_INCREMENT PRIMARY KEY,
                      material_name VARCHAR(255) ,
                      material_price VARCHAR(255),
-                     material_unit VARCHAR(255) )
+                     material_unit VARCHAR(255),
+                     material_category VARCHAR(255),
+                     material_type VARCHAR(255))
                      '''
             cursor.execute(material)
             url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
@@ -103,18 +105,49 @@ class InitApp:
             }
             r = requests.post(url, data=payload).content
             df = pd.read_html(r)[0]
+            #clean_data
+            # df.dropna(inplace=True)
+            # df.drop(df.index[14:37], inplace=True)
+            # df[4] = df[1].str.find('ขนาด')
+            # select_size = df.loc[df[4] >= 1]
+            # index = select_size[0]
+            # data = select_size[1]
+            # size = []
+            # pattern = ".*" + 'ขนาด'
+            # for i in data:
+            #     word = str(i)
+            #     strValue = re.sub(pattern, '', word)
+            #     size.append(strValue)
+
             material_name = df[1].to_numpy()
             material_unit = df[2].to_numpy()
             material_price = df[3].to_numpy()
             n = len(material_name) - 1
             insert_material = '''
-                           INSERT INTO Materials (`material_name`,`material_price`,`material_unit`) VALUES (%s,%s,%s);
+                           INSERT INTO Materials (`material_name`,`material_price`,`material_unit`,`material_category`) VALUES (%s,%s,%s,%s);
                            '''
             for i in range(1, n, 1):
                 val_name = str(material_name[i])
                 val_unit = str(material_unit[i])
                 val_price = str(material_price[i])
-                cursor.execute(insert_material, (val_name, val_price, val_unit))
+                val_category = 'building_material'
+                cursor.execute(insert_material, (val_name, val_price, val_unit, val_category))
+
+            # delete_phase
+            sql_delete_materials = '''DELETE FROM Materials   WHERE material_id = %s'''
+            for i in range(14, 42, 1):
+                cursor.execute(sql_delete_materials, (i,))
+            for i in range(53, 55, 1):
+                cursor.execute(sql_delete_materials, (i,))
+            for i in range(119, 127, 1):
+                cursor.execute(sql_delete_materials, (i,))
+
+            # update_phase
+            sql_update_material_category = '''UPDATE Materials SET material_category = %s  WHERE material_id = %s'''
+            for i in range(1, 14, 1):
+                cursor.execute(sql_update_material_category, ('building_material', i))
+
+            # cursor = builder.cursor()
             builder.commit()
             print('Created Material')
         except:
