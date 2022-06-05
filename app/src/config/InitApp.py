@@ -105,9 +105,11 @@ class InitApp:
             }
             r = requests.post(url, data=payload).content
             df = pd.read_html(r)[0]
-            #clean_data
-            # df.dropna(inplace=True)
-            # df.drop(df.index[14:37], inplace=True)
+            df.dropna(inplace=True)
+            df.drop(df.index[14:37], inplace=True)
+            df.drop(df.index[27:29], inplace=True)
+            df.drop(df.index[91:100], inplace=True)
+            # clean_data
             # df[4] = df[1].str.find('ขนาด')
             # select_size = df.loc[df[4] >= 1]
             # index = select_size[0]
@@ -118,36 +120,191 @@ class InitApp:
             #     word = str(i)
             #     strValue = re.sub(pattern, '', word)
             #     size.append(strValue)
-
             material_name = df[1].to_numpy()
             material_unit = df[2].to_numpy()
             material_price = df[3].to_numpy()
-            n = len(material_name) - 1
+            n = len(material_name)
             insert_material = '''
-                           INSERT INTO Materials (`material_name`,`material_price`,`material_unit`,`material_category`) VALUES (%s,%s,%s,%s);
+                           INSERT INTO Materials (`material_name`,`material_price`,`material_unit`) VALUES (%s,%s,%s);
                            '''
             for i in range(1, n, 1):
                 val_name = str(material_name[i])
                 val_unit = str(material_unit[i])
                 val_price = str(material_price[i])
-                val_category = 'building_material'
-                cursor.execute(insert_material, (val_name, val_price, val_unit, val_category))
-
-            # delete_phase
-            sql_delete_materials = '''DELETE FROM Materials   WHERE material_id = %s'''
-            for i in range(14, 42, 1):
-                cursor.execute(sql_delete_materials, (i,))
-            for i in range(53, 55, 1):
-                cursor.execute(sql_delete_materials, (i,))
-            for i in range(119, 127, 1):
-                cursor.execute(sql_delete_materials, (i,))
-
-            # update_phase
+                cursor.execute(insert_material, (val_name, val_price, val_unit))
+            # update_category_phase
             sql_update_material_category = '''UPDATE Materials SET material_category = %s  WHERE material_id = %s'''
-            for i in range(1, 14, 1):
-                cursor.execute(sql_update_material_category, ('building_material', i))
+            for i in range(1, n, 1):
+                if 1 <= i <= 13:
+                    cursor.execute(sql_update_material_category, ('building_material', i))
+                if 14 <= i <= 22:
+                    cursor.execute(sql_update_material_category, ('steel', i))
+                if 23 <= i <= 26:
+                    cursor.execute(sql_update_material_category, ('roof_ceiling', i))
+                if 27 <= i <= 31:
+                    cursor.execute(sql_update_material_category, ('steel', i))
+                if 32 <= i <= 40:
+                    cursor.execute(sql_update_material_category, ('electrical', i))
+                if 41 <= i <= 90:
+                    cursor.execute(sql_update_material_category, ('water_supply_pipes_fittings', i))
+                if 91 <= i <= 103:
+                    cursor.execute(sql_update_material_category, ('roof_ceiling', i))
+                if 104 <= i <= 106:
+                    cursor.execute(sql_update_material_category, ('wood', i))
+                if 107 <= i <= 110:
+                    cursor.execute(sql_update_material_category, ('roof_ceiling', i))
+                if 111 <= i <= 113:
+                    cursor.execute(sql_update_material_category, ('flooring_materials', i))
+                if 114 <= i <= 115:
+                    cursor.execute(sql_update_material_category, ('glass', i))
+                if 116 <= i <= 117:
+                    cursor.execute(sql_update_material_category, ('roof_ceiling', i))
+                if 118 <= i <= 120:
+                    cursor.execute(sql_update_material_category, ('flooring_materials', i))
+                if 121 <= i <= 124:
+                    cursor.execute(sql_update_material_category, ('building_material', i))
+                if 125 <= i <= 141:
+                    cursor.execute(sql_update_material_category, ('wood', i))
+                if 142 <= i <= 153:
+                    cursor.execute(sql_update_material_category, ('color_lacquer', i))
+                if 154 <= i <= 163:
+                    cursor.execute(sql_update_material_category, ('door_window', i))
+                if 164 <= i <= 167:
+                    cursor.execute(sql_update_material_category, ('steel', i))
+                if 168 <= i <= 170:
+                    cursor.execute(sql_update_material_category, ('door_window', i))
+                if 171 <= i <= 173:
+                    cursor.execute(sql_update_material_category, ('building_material', i))
+                if i == 174:
+                    cursor.execute(sql_update_material_category, (' color_lacquer ', i))
+                if 175 <= i <= 176:
+                    cursor.execute(sql_update_material_category, ('water_supply_pipes_fittings', i))
+                if 177 <= i <= 189:
+                    cursor.execute(sql_update_material_category, ('building_material', i))
+                if 190 <= i <= 195:
+                    cursor.execute(sql_update_material_category, ('water_supply_pipes_fittings', i))
+                if 196 <= i <= 201:
+                    cursor.execute(sql_update_material_category, ('electrical', i))
+                if 202 <= i <= 212:
+                    cursor.execute(sql_update_material_category, ('water_supply_pipes_fittings', i))
+            # update_type_phase
+            sql_update_material_type = '''UPDATE Materials SET material_type = %s  WHERE material_id = %s'''
+            for i in range(1, n, 1):
+                if 1 <= i <= 11:
+                    cursor.execute(sql_update_material_type, ('concrete', i))
+                if 12 <= i <= 13:
+                    cursor.execute(sql_update_material_type, ('brick', i))
+                if 14 <= i <= 15:
+                    cursor.execute(sql_update_material_type, ('sr_steel', i))
+                if 16 <= i <= 19:
+                    cursor.execute(sql_update_material_type, ('sd_steel', i))
+                if i == 20:
+                    cursor.execute(sql_update_material_type, ('steel_binding_wire', i))
+                if 21 <= i <= 22:
+                    cursor.execute(sql_update_material_type, ('angle_iron', i))
+                if 23 <= i <= 26:
+                    cursor.execute(sql_update_material_type, ('light_lip_channel_steel', i))
+                if 27 <= i <= 31:
+                    cursor.execute(sql_update_material_type, ('hollow_steel_tubing', i))
+                if 32 <= i <= 40:
+                    cursor.execute(sql_update_material_type, ('bs-m', i))
+                if 41 <= i <= 46:
+                    cursor.execute(sql_update_material_type, ('steel_fitting', i))
+                if 47 <= i <= 49:
+                    cursor.execute(sql_update_material_type, ('pipe_steel_fitting', i))
+                if 50 <= i <= 65:
+                    cursor.execute(sql_update_material_type, ('pvc_pipe', i))
+                if 66 <= i <= 90:
+                    cursor.execute(sql_update_material_type, ('pvc_fitting', i))
+                if i == 91:
+                    cursor.execute(sql_update_material_type, ('heat_insulation', i))
+                if 92 <= i <= 103:
+                    cursor.execute(sql_update_material_type, ('thatched', i))
+                if 104 <= i <= 106:
+                    cursor.execute(sql_update_material_type, ('rubber_veneer', i))
+                if 107 <= i <= 110:
+                    cursor.execute(sql_update_material_type, ('gypsum_board', i))
+                if 111 <= i <= 113:
+                    cursor.execute(sql_update_material_type, ('black_flat_steel', i))
+                if 114 <= i <= 115:
+                    cursor.execute(sql_update_material_type, ('clear_glass', i))
+                if 116 <= i <= 117:
+                    cursor.execute(sql_update_material_type, ('thatched', i))
+                if 118 <= i <= 120:
+                    cursor.execute(sql_update_material_type, ('glazed_floor_tiles', i))
+                if 121 <= i <= 124:
+                    cursor.execute(sql_update_material_type, ('glazed_wall_tiles', i))
+                if 125 <= i <= 128:
+                    cursor.execute(sql_update_material_type, ('teng_wood', i))
+                if 129 <= i <= 132:
+                    cursor.execute(sql_update_material_type, ('dang_wood', i))
+                if 133 <= i <= 137:
+                    cursor.execute(sql_update_material_type, ('yang_wood', i))
+                if 138 <= i <= 141:
+                    cursor.execute(sql_update_material_type, ('ka_bak_wood', i))
+                if i == 142:
+                    cursor.execute(sql_update_material_type, ('glaze_oil', i))
+                if 143 <= i <= 144:
+                    cursor.execute(sql_update_material_type, ('interior', i))
+                if 145 <= i <= 146:
+                    cursor.execute(sql_update_material_type, ('exterior', i))
+                if 147 <= i <= 149:
+                    cursor.execute(sql_update_material_type, ('foundation', i))
+                if 150 <= i <= 151:
+                    cursor.execute(sql_update_material_type, ('glaze_oil ', i))
+                if 152 <= i <= 153:
+                    cursor.execute(sql_update_material_type, ('lacquer', i))
+                if 154 <= i <= 157:
+                    cursor.execute(sql_update_material_type, ('teak_plywood', i))
+                if 158 <= i <= 161:
+                    cursor.execute(sql_update_material_type, ('rubber_plywood', i))
+                if 162 <= i <= 163:
+                    cursor.execute(sql_update_material_type, ('jamb', i))
+                if 164 <= i <= 167:
+                    cursor.execute(sql_update_material_type, ('nail', i))
+                if 168 <= i <= 169:
+                    cursor.execute(sql_update_material_type, ('window_hinge', i))
+                if i == 170:
+                    cursor.execute(sql_update_material_type, ('door_lock', i))
+                if 171 <= i <= 172:
+                    cursor.execute(sql_update_material_type, ('mortar', i))
+                if i == 173:
+                    cursor.execute(sql_update_material_type, ('flint_coat', i))
+                if i == 174:
+                    cursor.execute(sql_update_material_type, ('lacquer', i))
+                if 175 <= i <= 176:
+                    cursor.execute(sql_update_material_type, ('bonding_agent', i))
+                if 177 <= i <= 178:
+                    cursor.execute(sql_update_material_type, ('sand', i))
+                if 179 <= i <= 180:
+                    cursor.execute(sql_update_material_type, ('fine_sand', i))
+                if 181 <= i <= 185:
+                    cursor.execute(sql_update_material_type, ('rock', i))
+                if i == 186:
+                    cursor.execute(sql_update_material_type, ('sand', i))
+                if 187 <= i <= 189:
+                    cursor.execute(sql_update_material_type, ('stone', i))
+                if 190 <= i <= 192:
+                    cursor.execute(sql_update_material_type, ('tap', i))
+                if 193 <= i <= 195:
+                    cursor.execute(sql_update_material_type, ('tank', i))
+                if i == 196:
+                    cursor.execute(sql_update_material_type, ('electric_wire', i))
+                if i == 197:
+                    cursor.execute(sql_update_material_type, ('cable', i))
+                if i == 198:
+                    cursor.execute(sql_update_material_type, ('breaker', i))
+                if 199 <= i <= 201:
+                    cursor.execute(sql_update_material_type, ('light_bulb', i))
+                if 202 <= i <= 205:
+                    cursor.execute(sql_update_material_type, ('wc', i))
+                if 206 <= i <= 207:
+                    cursor.execute(sql_update_material_type, ('basin', i))
+                if 208 <= i <= 210:
+                    cursor.execute(sql_update_material_type, ('dish_soap ', i))
+                if 211 <= i <= 212:
+                    cursor.execute(sql_update_material_type, ('toilet_paper_holder', i))
 
-            # cursor = builder.cursor()
             builder.commit()
             print('Created Material')
         except:
