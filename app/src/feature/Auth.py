@@ -13,26 +13,59 @@ class Auth(object):
         print('Email :' + str(email))
         print('Password :' + str(password))
         cursor = builder.cursor()
-        sql_login = '''
+        sql_contractor_login = '''
                 SELECT Contractors.contractor_id,Contractors.active,Contractors.first_name,Users.role,Users.status
                 FROM Contractors
                 INNER JOIN Users
                 ON Contractors.user_id = Users.user_id
                 WHERE Contractors.email = %s 
-                AND Contractors.password = %s 
+                AND Contractors.password = %s  
             '''
         password = hashlib.md5(password.encode()).hexdigest()
         val = (email, password)
-        cursor.execute(sql_login, val)
+        cursor.execute(sql_contractor_login, val)
         result = cursor.fetchall()
-        print(result)
+        print(len(result))
         if len(result) == 0:
-            print('result not match')
-            return {
-                'check': False
+            sql_admin_login = '''
+                          SELECT Admins.admin_id,Users.role,Users.status
+                          FROM Admins
+                          INNER JOIN Users
+                          ON Admins.user_id = Users.user_id
+                          WHERE Admins.email = %s
+                          AND Admins.password = %s
+                      '''
+            cursor.execute(sql_admin_login, val)
+            result = cursor.fetchall()
+            if len(result) == 0:
+                print('result not match')
+                return {
+                    'check': False
+                }
+            df = pd.DataFrame(result, columns=['user_id', 'role', 'status'])
+            payload_data = {
+                "password": password,
+                "email": email
             }
+            token = jwt.encode(
+                payload_data,
+                key='my_super_secret'
+            )
+            df['token'] = token
+            user = [{
+                'id': df['user_id'].iloc[0],
+                'status': df['status'].iloc[0],
+                'role': df['role'].iloc[0],
+            }]
+            df['user'] = user
+            df = df.drop(['user_id', 'role', 'status'], axis=1)
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            print("Pass valid")
+            return output
+
         df = pd.DataFrame(result,
-                          columns=['contractor_id', 'active', 'first_name', 'role', 'status'])
+                          columns=['user_id', 'active', 'first_name', 'role', 'status'])
         payload_data = {
             "password": password,
             "email": email
@@ -43,14 +76,14 @@ class Auth(object):
         )
         df['token'] = token
         user = [{
-            'id': df['contractor_id'].iloc[0],
+            'user_id': df['user_id'].iloc[0],
             'username': df['first_name'].iloc[0],
             'status': df['status'].iloc[0],
             'role': df['role'].iloc[0],
             'active': df['active'].iloc[0]
         }]
         df['user'] = user
-
+        df = df.drop(['user_id', 'active', 'first_name', 'role', 'status'], axis=1)
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         print("Pass valid")
