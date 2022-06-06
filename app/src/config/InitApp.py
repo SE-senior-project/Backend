@@ -93,6 +93,7 @@ class InitApp:
             admin = '''
                        CREATE TABLE Admins (
                        admin_id INT AUTO_INCREMENT PRIMARY KEY,
+                       admin_name VARCHAR(255) NOT NULL,
                        email VARCHAR(255) NOT NULL,
                        password VARCHAR(255) NOT NULL,
                        user_id INT,
@@ -104,7 +105,7 @@ class InitApp:
             cursor.execute(admin)
 
             insert_admin = '''
-                 INSERT INTO Admins (admin_id,email,password,user_id) VALUES (NULL ,'admin@gmail.com', %s ,1),(NULL ,'admin_1@gmail.com', %s ,2),(NULL ,'admin_2@gmail.com', %s ,3);
+                 INSERT INTO Admins (admin_id,admin_name,email,password,user_id) VALUES (NULL ,'admin','admin@gmail.com', %s ,1),(NULL ,'admin1','admin_1@gmail.com', %s ,2),(NULL ,'admin2','admin_2@gmail.com', %s ,3);
                  '''
             admin_pass = 'admin1234'
             admin_pass = hashlib.md5(admin_pass.encode()).hexdigest()

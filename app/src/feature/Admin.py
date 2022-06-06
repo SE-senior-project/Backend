@@ -5,15 +5,14 @@ import pandas as pd
 
 class Admin(object):
     @staticmethod
-    def update_external_data(ml, yl):
-        print('month :' + ml)
-        print('year :' + yl)
+    def update_external_data(mm):
+        print('month :' + mm)
         try:
             cursor = builder.cursor()
             url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
             payload = {
-                'DDMonth': ml,
-                'DDYear': yl,
+                'DDMonth': mm,
+                'DDYear': '2565',
                 'DDProvince': '50',
                 'texttable': 'csi_price_north_web_avg',
                 'text_name': 'unit_code_N',

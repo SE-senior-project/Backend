@@ -15,6 +15,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+
+
 # InitApp
 
 
@@ -36,11 +38,10 @@ def register():
 
 
 # ###################### Admin #########################
-@app.route("/", methods=["POST"])
+@app.route("/External", methods=["POST"])
 def fetch_external_data():
-    month = request.json['month']
-    year = request.json['year']
-    return jsonify(Admin.update_external_data(month, year))
+    mm = request.json['mm']
+    return jsonify(Admin.update_external_data(mm))
 
 
 @app.route("/Approve", methods=["POST"])
