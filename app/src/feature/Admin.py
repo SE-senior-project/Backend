@@ -40,7 +40,7 @@ class Admin(object):
         try:
             cursor = builder.cursor()
             sql_waiting_user = '''
-                SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status
+                SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
                 FROM Contractors
                 INNER JOIN Users
                 ON Contractors.user_id = Users.user_id
@@ -50,7 +50,8 @@ class Admin(object):
             result = cursor.fetchall()
             builder.commit()
             df = pd.DataFrame(result,
-                              columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status',
+                                       'user_id'])
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send waiting_user')
@@ -63,17 +64,19 @@ class Admin(object):
         try:
             cursor = builder.cursor()
             sql_active_user = '''
-                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status
+                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
                        FROM Contractors
                        INNER JOIN Users
                        ON Contractors.user_id = Users.user_id
                        WHERE Contractors.active = 1
+                       AND Users.status =1
                    '''
             cursor.execute(sql_active_user)
             result = cursor.fetchall()
             builder.commit()
             df = pd.DataFrame(result,
-                              columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status',
+                                       'user_id'])
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send active_contractor')
@@ -86,7 +89,7 @@ class Admin(object):
         try:
             cursor = builder.cursor()
             sql_disable_user = '''
-                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status
+                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
                        FROM Contractors
                        INNER JOIN Users
                        ON Contractors.user_id = Users.user_id
@@ -97,7 +100,7 @@ class Admin(object):
             result = cursor.fetchall()
             builder.commit()
             df = pd.DataFrame(result,
-                              columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status','user_id'])
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send disable_contractor')
@@ -120,7 +123,7 @@ class Admin(object):
     def unapprove_user(user_id):
         try:
             cursor = builder.cursor()
-            sql_unapprove_user = '''DELETE FROM Users   WHERE user_id = %s'''
+            sql_unapprove_user = '''DELETE FROM Users  WHERE user_id = %s'''
             cursor.execute(sql_unapprove_user, (user_id,))
             builder.commit()
             print('Unpproved user')

@@ -126,6 +126,6 @@ class Auth(object):
         sql_register = '''
           INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
           '''
-        val = (first_name, last_name, email, password, 0, temp)
+        val = (first_name, last_name, email, password, 1, temp)
         cursor.execute(sql_register, val)
         builder.commit()
