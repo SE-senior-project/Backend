@@ -48,9 +48,9 @@ class Admin(object):
             '''
             cursor.execute(sql_waiting_user)
             result = cursor.fetchall()
+            builder.commit()
             df = pd.DataFrame(result,
                               columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
-            builder.commit()
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send waiting_user')
@@ -71,9 +71,9 @@ class Admin(object):
                    '''
             cursor.execute(sql_active_user)
             result = cursor.fetchall()
+            builder.commit()
             df = pd.DataFrame(result,
                               columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
-            builder.commit()
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send active_contractor')
@@ -95,9 +95,9 @@ class Admin(object):
                    '''
             cursor.execute(sql_disable_user)
             result = cursor.fetchall()
+            builder.commit()
             df = pd.DataFrame(result,
                               columns=['user_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status'])
-            builder.commit()
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print('Already send disable_contractor')

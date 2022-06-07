@@ -73,7 +73,7 @@ def Unapprove_user():
 
 @app.route("/Active", methods=["POST"])
 def Active_contractor():
-    contractor_id = request.json['contractor_id ']
+    contractor_id = request.json['contractor_id']
     return jsonify(Admin.active_contractor(contractor_id))
 
 

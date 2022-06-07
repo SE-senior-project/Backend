@@ -109,6 +109,7 @@ class Auth(object):
         print('User_Lastname :' + str(last_name))
         print('User_Email :' + str(email))
         print('User_Password :' + str(password))
+        password = hashlib.md5(password.encode()).hexdigest()
         Auth.add_user()
         cursor = builder.cursor()
         sql_latest_user_id = '''
