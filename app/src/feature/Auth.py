@@ -53,7 +53,7 @@ class Auth(object):
             )
             df['token'] = token
             user = [{
-                'id': df['user_id'].iloc[0],
+                'user_id': df['user_id'].iloc[0],
                 'username': df['username'].iloc[0],
                 'status': df['status'].iloc[0],
                 'role': df['role'].iloc[0],

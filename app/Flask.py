@@ -7,7 +7,7 @@
 # db = SQLAlchemy(app)
 
 from flask import Flask, request, jsonify
-# from src.config.InitApp import InitApp
+# from src.config.InitApp import *
 from src.feature.Auth import *
 from src.feature.Admin import *
 from flask_cors import CORS
@@ -18,7 +18,12 @@ CORS(app)
 
 # InitApp
 
-class Flask:
+class FlaskController:
+    ###################### InitApp #########################
+    # @staticmethod
+    # def Build_all_table():
+    # InitApp.build_all_table()
+
     ###################### Auth #########################
     @staticmethod
     @app.route("/Login", methods=["POST"])
@@ -49,7 +54,7 @@ class Flask:
 
     @staticmethod
     @app.route("/Disable_Contractor", methods=["GET"])
-    def Get_all_contractor():
+    def Get_all_disable_contractor():
         return jsonify(Admin.get_all_disable_contractor())
 
     @staticmethod

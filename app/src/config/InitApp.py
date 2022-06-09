@@ -393,12 +393,16 @@ class InitApp:
             print('Created Project')
         except:
             print('Create fail')
+        # Project_Entity
+
+    @staticmethod
+    def build_all_table():
+        InitApp.drop_table()
+        InitApp.build_table_user()
+        InitApp.build_table_admin()
+        InitApp.build_table_contractor()
+        InitApp.build_table_material()
+        InitApp.build_table_project_material()
+        InitApp.build_table_project()
 
 
-InitApp.drop_table()
-InitApp.build_table_user()
-InitApp.build_table_admin()
-InitApp.build_table_contractor()
-InitApp.build_table_material()
-InitApp.build_table_project_material()
-InitApp.build_table_project()
