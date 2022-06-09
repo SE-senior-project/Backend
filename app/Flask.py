@@ -11,76 +11,76 @@ from flask import Flask, request, jsonify
 from src.feature.Auth import *
 from src.feature.Admin import *
 from flask_cors import CORS
-from pympler import muppy
-muppy.get_objects()
+
 app = Flask(__name__)
 CORS(app)
 
 
 # InitApp
 
+class Flask:
+    ###################### Auth #########################
+    @staticmethod
+    @app.route("/Login", methods=["POST"])
+    def Login_user():
+        email = request.json['email']
+        password = request.json['password']
+        return jsonify(Auth.login_user(email, password))
 
-###################### Auth #########################
-@app.route("/Login", methods=["POST"])
-def Login_user():
-    email = request.json['email']
-    password = request.json['password']
-    return jsonify(Auth.login_user(email, password))
+    @staticmethod
+    @app.route("/Register", methods=["POST"])
+    def Register_user():
+        first_name = request.json['first_name']
+        last_name = request.json['last_name']
+        email = request.json['email']
+        password = request.json['password']
+        return jsonify(Auth.register_user(first_name, last_name, email, password))
 
+    # ###################### Admin #########################
+    @staticmethod
+    @app.route("/New_User", methods=["GET"])
+    def Get_all_waiting_user():
+        return jsonify(Admin.get_all_waiting_user())
 
-@app.route("/Register", methods=["POST"])
-def Register_user():
-    first_name = request.json['first_name']
-    last_name = request.json['last_name']
-    email = request.json['email']
-    password = request.json['password']
-    return jsonify(Auth.register_user(first_name, last_name, email, password))
+    @staticmethod
+    @app.route("/Active_Contractor", methods=["GET"])
+    def Get_all_active_contractor():
+        return jsonify(Admin.get_all_active_contractor())
 
+    @staticmethod
+    @app.route("/Disable_Contractor", methods=["GET"])
+    def Get_all_contractor():
+        return jsonify(Admin.get_all_disable_contractor())
 
-# ###################### Admin #########################
-@app.route("/New_User", methods=["GET"])
-def Get_all_waiting_user():
-    return jsonify(Admin.get_all_waiting_user())
+    @staticmethod
+    @app.route("/External", methods=["POST"])
+    def Update_external_data():
+        mm = request.json['mm']
+        return jsonify(Admin.update_external_data(mm))
 
+    @staticmethod
+    @app.route("/Approve", methods=["POST"])
+    def Approve_user():
+        user_id = request.json['user_id']
+        return jsonify(Admin.approve_user(user_id))
 
-@app.route("/Active_Contractor", methods=["GET"])
-def Get_all_active_contractor():
-    return jsonify(Admin.get_all_active_contractor())
+    @staticmethod
+    @app.route("/Unapprove", methods=["POST"])
+    def Unapprove_user():
+        user_id = request.json['user_id']
+        return jsonify(Admin.unapprove_user(user_id))
 
+    @staticmethod
+    @app.route("/Active", methods=["POST"])
+    def Active_contractor():
+        contractor_id = request.json['contractor_id']
+        return jsonify(Admin.active_contractor(contractor_id))
 
-@app.route("/Disable_Contractor", methods=["GET"])
-def Get_all_contractor():
-    return jsonify(Admin.get_all_disable_contractor())
-
-
-@app.route("/External", methods=["POST"])
-def Update_external_data():
-    mm = request.json['mm']
-    return jsonify(Admin.update_external_data(mm))
-
-
-@app.route("/Approve", methods=["POST"])
-def Approve_user():
-    user_id = request.json['user_id']
-    return jsonify(Admin.approve_user(user_id))
-
-
-@app.route("/Unapprove", methods=["POST"])
-def Unapprove_user():
-    user_id = request.json['user_id']
-    return jsonify(Admin.unapprove_user(user_id))
-
-
-@app.route("/Active", methods=["POST"])
-def Active_contractor():
-    contractor_id = request.json['contractor_id']
-    return jsonify(Admin.active_contractor(contractor_id))
-
-
-@app.route("/Disable", methods=["POST"])
-def Disable_contractor():
-    contractor_id = request.json['contractor_id']
-    return jsonify(Admin.disable_contractor(contractor_id))
+    @staticmethod
+    @app.route("/Disable", methods=["POST"])
+    def Disable_contractor():
+        contractor_id = request.json['contractor_id']
+        return jsonify(Admin.disable_contractor(contractor_id))
 
 
 if __name__ == '__main__':
