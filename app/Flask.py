@@ -7,7 +7,7 @@
 # db = SQLAlchemy(app)
 
 from flask import Flask, request, jsonify
-# from src.config.InitApp import *
+from src.config.InitApp import *
 from src.feature.Auth import *
 from src.feature.Admin import *
 from flask_cors import CORS
@@ -20,9 +20,9 @@ CORS(app)
 
 class FlaskController:
     ###################### InitApp #########################
-    # @staticmethod
-    # def Build_all_table():
-    # InitApp.build_all_table()
+    @staticmethod
+    def Build_all_table():
+        InitApp.build_all_table()
 
     ###################### Auth #########################
     @staticmethod
@@ -88,6 +88,7 @@ class FlaskController:
         return jsonify(Admin.disable_contractor(contractor_id))
 
 
+# FlaskController.Build_all_table()
 if __name__ == '__main__':
     # from waitress import serve
     # serve(app, host="0.0.0.0", port=8080, debug=True)
