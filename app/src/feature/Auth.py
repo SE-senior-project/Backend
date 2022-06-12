@@ -105,27 +105,35 @@ class Auth(object):
 
     @staticmethod
     def register_user(first_name, last_name, email, password):
-        print('User_Firstname :' + str(first_name))
-        print('User_Lastname :' + str(last_name))
-        print('User_Email :' + str(email))
-        print('User_Password :' + str(password))
-        password = hashlib.md5(password.encode()).hexdigest()
-        Auth.add_user()
-        cursor = builder.cursor()
-        sql_latest_user_id = '''
-                  SELECT user_id
-                  FROM Users
-                  ORDER BY user_id  ASC '''
-        cursor.execute(sql_latest_user_id)
-        result = cursor.fetchall()
-        temp = json.dumps(result[len(result) - 1])
-        temp = temp.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\,!"\r\])' + U'\xa8'))
-        temp = int(temp)
-        print(temp)
+        if first_name == "" or last_name == "" or email == "" or password == "":
+            return {
+                "message": " register unsuccessfully"
+            }
+        else:
+            print('User_Firstname :' + str(first_name))
+            print('User_Lastname :' + str(last_name))
+            print('User_Email :' + str(email))
+            print('User_Password :' + str(password))
+            password = hashlib.md5(password.encode()).hexdigest()
+            Auth.add_user()
+            cursor = builder.cursor()
+            sql_latest_user_id = '''
+                      SELECT user_id
+                      FROM Users
+                      ORDER BY user_id  ASC '''
+            cursor.execute(sql_latest_user_id)
+            result = cursor.fetchall()
+            temp = json.dumps(result[len(result) - 1])
+            temp = temp.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\,!"\r\])' + U'\xa8'))
+            temp = int(temp)
+            print(temp)
 
-        sql_register = '''
-          INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
-          '''
-        val = (first_name, last_name, email, password, 1, temp)
-        cursor.execute(sql_register, val)
-        builder.commit()
+            sql_register = '''
+              INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
+              '''
+            val = (first_name, last_name, email, password, 1, temp)
+            cursor.execute(sql_register, val)
+            builder.commit()
+            return {
+                "message": " register successfully"
+            }
