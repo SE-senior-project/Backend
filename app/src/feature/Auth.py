@@ -28,7 +28,7 @@ class Auth(object):
         print(len(result))
         if len(result) == 0:
             sql_admin_login = '''
-                          SELECT Admins.admin_id,Users.role,Users.status
+                          SELECT Admins.admin_id,Admins.admin_name,Users.role,Users.status
                           FROM Admins
                           INNER JOIN Users
                           ON Admins.user_id = Users.user_id
@@ -42,7 +42,7 @@ class Auth(object):
                 return {
                     'check': False
                 }
-            df = pd.DataFrame(result, columns=['user_id', 'role', 'status'])
+            df = pd.DataFrame(result, columns=['user_id', 'username', 'role', 'status'])
             payload_data = {
                 "password": password,
                 "email": email
@@ -53,12 +53,13 @@ class Auth(object):
             )
             df['token'] = token
             user = [{
-                'id': df['user_id'].iloc[0],
+                'user_id': df['user_id'].iloc[0],
+                'username': df['username'].iloc[0],
                 'status': df['status'].iloc[0],
                 'role': df['role'].iloc[0],
             }]
             df['user'] = user
-            df = df.drop(['user_id', 'role', 'status'], axis=1)
+            df = df.drop(['user_id', 'username', 'role', 'status'], axis=1)
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
             print("Pass valid")
@@ -108,6 +109,7 @@ class Auth(object):
         print('User_Lastname :' + str(last_name))
         print('User_Email :' + str(email))
         print('User_Password :' + str(password))
+        password = hashlib.md5(password.encode()).hexdigest()
         Auth.add_user()
         cursor = builder.cursor()
         sql_latest_user_id = '''
@@ -124,6 +126,6 @@ class Auth(object):
         sql_register = '''
           INSERT INTO `Contractors` ( `first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (%s ,%s ,%s ,%s ,%s,%s)
           '''
-        val = (first_name, last_name, email, password, 0, temp)
+        val = (first_name, last_name, email, password, 1, temp)
         cursor.execute(sql_register, val)
         builder.commit()

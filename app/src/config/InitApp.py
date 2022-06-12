@@ -22,9 +22,9 @@ class InitApp:
             delete_material = '''DROP TABLE IF EXISTS Materials;'''
             cursor.execute(delete_material)
             builder.commit()
-            print('Already droup')
+            print('Already drop all tables')
         except:
-            print('Droup fail')
+            print('Fail in drop all tables')
 
     # User_Entity
     @staticmethod
@@ -43,7 +43,7 @@ class InitApp:
             cursor.execute(user)
 
             insert_user = '''
-              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0);
+              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0),(NULL ,'contractor', 1);
               '''
             cursor.execute(insert_user)
             builder.commit()
@@ -73,13 +73,15 @@ class InitApp:
             cursor.execute(contractor)
 
             insert_contractor = '''
-              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5);
+              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5),(NULL ,'oat','sahachan','oat@gmail.com',%s,0, 6);
               '''
             pass1 = 'kong1234'
             pass2 = 'fax1234'
+            pass3 = 'oat1234'
             pass1 = hashlib.md5(pass1.encode()).hexdigest()
             pass2 = hashlib.md5(pass2.encode()).hexdigest()
-            cursor.execute(insert_contractor, (pass1, pass2))
+            pass3 = hashlib.md5(pass3.encode()).hexdigest()
+            cursor.execute(insert_contractor, (pass1, pass2,pass3))
             builder.commit()
             print('Created Contractor')
         except:
@@ -93,6 +95,7 @@ class InitApp:
             admin = '''
                        CREATE TABLE Admins (
                        admin_id INT AUTO_INCREMENT PRIMARY KEY,
+                       admin_name VARCHAR(255) NOT NULL,
                        email VARCHAR(255) NOT NULL,
                        password VARCHAR(255) NOT NULL,
                        user_id INT,
@@ -104,7 +107,7 @@ class InitApp:
             cursor.execute(admin)
 
             insert_admin = '''
-                 INSERT INTO Admins (admin_id,email,password,user_id) VALUES (NULL ,'admin@gmail.com', %s ,1),(NULL ,'admin_1@gmail.com', %s ,2),(NULL ,'admin_2@gmail.com', %s ,3);
+                 INSERT INTO Admins (admin_id,admin_name,email,password,user_id) VALUES (NULL ,'admin','admin@gmail.com', %s ,1),(NULL ,'admin1','admin_1@gmail.com', %s ,2),(NULL ,'admin2','admin_2@gmail.com', %s ,3);
                  '''
             admin_pass = 'admin1234'
             admin_pass = hashlib.md5(admin_pass.encode()).hexdigest()
@@ -379,25 +382,35 @@ class InitApp:
                      project_name VARCHAR(255) NOT NULL,
                      project_description VARCHAR(1000) NOT NULL,
                      customer_name VARCHAR(255) NOT NULL,
-                     date_line DATE NOT NULL,
+                     deadline DATE NOT NULL,
                      contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE,
                      project_material_id INT, FOREIGN KEY (project_material_id) REFERENCES ProjectMaterials(project_material_id)ON DELETE  CASCADE ON UPDATE CASCADE)
                      '''
             cursor.execute(project)
             insert_contractor = '''
-                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`date_line`,`contractor_id`,`project_material_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1,1);
+                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`,`contractor_id`,`project_material_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1,1);
                     '''
             cursor.execute(insert_contractor)
             builder.commit()
             print('Created Project')
         except:
             print('Create fail')
+        # Project_Entity
 
-
-InitApp.drop_table()
-InitApp.build_table_user()
-InitApp.build_table_admin()
-InitApp.build_table_contractor()
-InitApp.build_table_material()
-InitApp.build_table_project_material()
-InitApp.build_table_project()
+    @staticmethod
+    def build_all_table():
+        # check = True
+        # if check:
+        #     try:
+        InitApp.drop_table()
+        InitApp.build_table_user()
+        InitApp.build_table_admin()
+        InitApp.build_table_contractor()
+        InitApp.build_table_material()
+        InitApp.build_table_project_material()
+        InitApp.build_table_project()
+    #         print('build pass')
+    #     except:
+    #         print('build false')
+    # else:
+    #     pass

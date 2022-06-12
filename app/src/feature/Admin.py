@@ -1,19 +1,19 @@
 from app.src.config.Service import *
 import requests
 import pandas as pd
+import json
 
 
 class Admin(object):
     @staticmethod
-    def update_external_data(ml, yl):
-        print('month :' + ml)
-        print('year :' + yl)
+    def update_external_data(mm):
+        print('month :' + mm)
         try:
             cursor = builder.cursor()
             url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
             payload = {
-                'DDMonth': ml,
-                'DDYear': yl,
+                'DDMonth': mm,
+                'DDYear': '2565',
                 'DDProvince': '50',
                 'texttable': 'csi_price_north_web_avg',
                 'text_name': 'unit_code_N',
@@ -36,6 +36,79 @@ class Admin(object):
             print('Update external data fail')
 
     @staticmethod
+    def get_all_waiting_user():
+        try:
+            cursor = builder.cursor()
+            sql_waiting_user = '''
+                SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
+                FROM Contractors
+                INNER JOIN Users
+                ON Contractors.user_id = Users.user_id
+                WHERE Users.status = 0 
+            '''
+            cursor.execute(sql_waiting_user)
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status',
+                                       'user_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            print('Already send waiting_user')
+        except:
+            print('Sending fail')
+        return output
+
+    @staticmethod
+    def get_all_active_contractor():
+        try:
+            cursor = builder.cursor()
+            sql_active_user = '''
+                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
+                       FROM Contractors
+                       INNER JOIN Users
+                       ON Contractors.user_id = Users.user_id
+                       WHERE Contractors.active = 1
+                       AND Users.status =1
+                   '''
+            cursor.execute(sql_active_user)
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status',
+                                       'user_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            print('Already send active_contractor')
+        except:
+            print('Sending fail')
+        return output
+
+    @staticmethod
+    def get_all_disable_contractor():
+        try:
+            cursor = builder.cursor()
+            sql_disable_user = '''
+                       SELECT Contractors.contractor_id,Contractors.first_name,Contractors.last_name,Contractors.email,Contractors.active,Users.role,Users.status, Users.user_id
+                       FROM Contractors
+                       INNER JOIN Users
+                       ON Contractors.user_id = Users.user_id
+                       WHERE Contractors.active = 0
+                       AND Users.status =1
+                   '''
+            cursor.execute(sql_disable_user)
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['contractor_id', 'first_name', 'last_name', 'email', 'active', 'role', 'status','user_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            print('Already send disable_contractor')
+        except:
+            print('Sending fail')
+        return output
+
+    @staticmethod
     def approve_user(user_id):
         try:
             cursor = builder.cursor()
@@ -50,7 +123,7 @@ class Admin(object):
     def unapprove_user(user_id):
         try:
             cursor = builder.cursor()
-            sql_unapprove_user = '''DELETE FROM Users   WHERE user_id = %s'''
+            sql_unapprove_user = '''DELETE FROM Users  WHERE user_id = %s'''
             cursor.execute(sql_unapprove_user, (user_id,))
             builder.commit()
             print('Unpproved user')
