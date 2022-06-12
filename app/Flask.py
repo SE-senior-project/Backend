@@ -10,6 +10,7 @@ from flask import Flask, request, jsonify
 from src.config.InitApp import *
 from src.feature.Auth import *
 from src.feature.Admin import *
+from src.feature.ProjectManagement import *
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -87,6 +88,12 @@ class FlaskController:
         contractor_id = request.json['contractor_id']
         return jsonify(Admin.disable_contractor(contractor_id))
 
+    # ###################### PM #########################
+
+    @staticmethod
+    @app.route("/All_Materials", methods=["GET"])
+    def Get_all_materials():
+        return jsonify(ProjectManagement.get_all_materials())
 
 FlaskController.Build_all_table()
 if __name__ == '__main__':

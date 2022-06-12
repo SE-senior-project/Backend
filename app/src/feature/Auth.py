@@ -14,13 +14,13 @@ class Auth(object):
         print('Password :' + str(password))
         cursor = builder.cursor()
         sql_contractor_login = '''
-                SELECT Contractors.contractor_id,Contractors.active,Contractors.first_name,Users.role,Users.status
-                FROM Contractors
-                INNER JOIN Users
-                ON Contractors.user_id = Users.user_id
-                WHERE Contractors.email = %s 
-                AND Contractors.password = %s  
-            '''
+                    SELECT Contractors.contractor_id,Contractors.active,Contractors.first_name,Users.role,Users.status
+                    FROM Contractors
+                    INNER JOIN Users
+                    ON Contractors.user_id = Users.user_id
+                    WHERE Contractors.email = %s 
+                    AND Contractors.password = %s  
+                '''
         password = hashlib.md5(password.encode()).hexdigest()
         val = (email, password)
         cursor.execute(sql_contractor_login, val)
@@ -28,13 +28,13 @@ class Auth(object):
         print(len(result))
         if len(result) == 0:
             sql_admin_login = '''
-                          SELECT Admins.admin_id,Admins.admin_name,Users.role,Users.status
-                          FROM Admins
-                          INNER JOIN Users
-                          ON Admins.user_id = Users.user_id
-                          WHERE Admins.email = %s
-                          AND Admins.password = %s
-                      '''
+                              SELECT Admins.admin_id,Admins.admin_name,Users.role,Users.status
+                              FROM Admins
+                              INNER JOIN Users
+                              ON Admins.user_id = Users.user_id
+                              WHERE Admins.email = %s
+                              AND Admins.password = %s
+                          '''
             cursor.execute(sql_admin_login, val)
             result = cursor.fetchall()
             if len(result) == 0:
