@@ -22,9 +22,9 @@ class InitApp:
             delete_material = '''DROP TABLE IF EXISTS Materials;'''
             cursor.execute(delete_material)
             builder.commit()
-            print('Already droup')
+            print('Already drop all tables')
         except:
-            print('Droup fail')
+            print('Fail in drop all tables')
 
     # User_Entity
     @staticmethod
@@ -43,7 +43,7 @@ class InitApp:
             cursor.execute(user)
 
             insert_user = '''
-              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0);
+              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0),(NULL ,'contractor', 1);
               '''
             cursor.execute(insert_user)
             builder.commit()
@@ -73,13 +73,15 @@ class InitApp:
             cursor.execute(contractor)
 
             insert_contractor = '''
-              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5);
+              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5),(NULL ,'oat','sahachan','oat@gmail.com',%s,0, 6);
               '''
             pass1 = 'kong1234'
             pass2 = 'fax1234'
+            pass3 = 'oat1234'
             pass1 = hashlib.md5(pass1.encode()).hexdigest()
             pass2 = hashlib.md5(pass2.encode()).hexdigest()
-            cursor.execute(insert_contractor, (pass1, pass2))
+            pass3 = hashlib.md5(pass3.encode()).hexdigest()
+            cursor.execute(insert_contractor, (pass1, pass2,pass3))
             builder.commit()
             print('Created Contractor')
         except:
@@ -397,6 +399,9 @@ class InitApp:
 
     @staticmethod
     def build_all_table():
+        # check = True
+        # if check:
+        #     try:
         InitApp.drop_table()
         InitApp.build_table_user()
         InitApp.build_table_admin()
@@ -404,5 +409,8 @@ class InitApp:
         InitApp.build_table_material()
         InitApp.build_table_project_material()
         InitApp.build_table_project()
-
-
+    #         print('build pass')
+    #     except:
+    #         print('build false')
+    # else:
+    #     pass
