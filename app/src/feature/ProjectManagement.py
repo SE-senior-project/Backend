@@ -135,3 +135,15 @@ class ProjectManagement(object):
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
+
+    @staticmethod
+    def number_material(project_material_total, project_material_id):
+        cursor = builder.cursor()
+        print(project_material_total)
+        sql_increase = '''
+                   UPDATE ProjectMaterials 
+                   SET ProjectMaterials.project_material_total = %s
+                   WHERE ProjectMaterials.project_material_id = %s
+                '''
+        cursor.execute(sql_increase, (project_material_total, project_material_id))
+        builder.commit()
