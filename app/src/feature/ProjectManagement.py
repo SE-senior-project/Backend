@@ -43,12 +43,12 @@ class ProjectManagement(object):
     @staticmethod
     def get_all_project_material(project_id):
         cursor = builder.cursor()
-        sql_generate_project = '''
+        sql_project_materials = '''
                SELECT *
                FROM ProjectMaterials
                WHERE ProjectMaterials.project_id = %s
             '''
-        cursor.execute(sql_generate_project, (project_id,))
+        cursor.execute(sql_project_materials, (project_id,))
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
@@ -58,6 +58,31 @@ class ProjectManagement(object):
         output = json.loads(json_result)
         return output
 
+    @staticmethod
+    def add_material(material_name, material_price, project_id):
+        cursor = builder.cursor()
+        try:
+            if(material_price < 0 or material_name == "" or project_id != int or material_price != int):
+                return {
+                    "message": "invalid input"
+                }
+            else:
+                sql_add_material = '''
+                    INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_id)
+                    VALUES (%s ,%s, %s)
+                    '''
+                cursor.execute(sql_add_material, (material_name, material_price, project_id,))
+                builder.commit()
+                print('insert pass')
+                return {
+                    "message": "add material successfully"
+                }
+        except:
+            print('insert fail')
+            return {
+                "message": "add material unsuccessfully"
+            }
+    
     @staticmethod
     def get_all_project(contractor_id):
         cursor = builder.cursor()
