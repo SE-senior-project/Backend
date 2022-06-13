@@ -59,26 +59,26 @@ class ProjectManagement(object):
         return output
 
     @staticmethod
-    def add_material(material_name, material_price, project_id):
+    def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
-        try:
-            if (material_price < 0 or material_name == "" or project_id != int or material_price != int):
-                return {
-                    "message": "invalid input"
-                }
-            else:
+        if material_price < 0 or material_name == "" or type(project_id) != int or type(project_material_total) != int or project_material_total < 1:
+            return {
+                "message": "invalid input"
+            }
+        else:
+            try:
                 sql_add_material = '''
-                    INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_id)
-                    VALUES (%s ,%s, %s)
+                    INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_material_total, ProjectMaterials.project_id)
+                    VALUES (%s ,%s, %s, %s)
                     '''
-                cursor.execute(sql_add_material, (material_name, material_price, project_id,))
+                cursor.execute(sql_add_material, (material_name, material_price, project_material_total, project_id,))
                 builder.commit()
                 print('insert pass')
                 return {
                     "message": "add material successfully"
                 }
-        except:
-            print('insert fail')
+            except:
+                print('insert fail')
             return {
                 "message": "add material unsuccessfully"
             }
@@ -153,3 +153,15 @@ class ProjectManagement(object):
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
+      
+    @staticmethod
+    def number_material(project_material_total, project_material_id):
+        cursor = builder.cursor()
+        print(project_material_total)
+        sql_increase = '''
+                   UPDATE ProjectMaterials 
+                   SET ProjectMaterials.project_material_total = %s
+                   WHERE ProjectMaterials.project_material_id = %s
+                '''
+        cursor.execute(sql_increase, (project_material_total, project_material_id))
+        builder.commit()
