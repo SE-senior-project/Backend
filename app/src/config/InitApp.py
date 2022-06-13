@@ -9,10 +9,10 @@ class InitApp:
     def drop_table():
         try:
             cursor = builder.cursor()
-            delete_project = '''DROP TABLE IF EXISTS Projects;'''
-            cursor.execute(delete_project)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
             cursor.execute(delete_project_material)
+            delete_project = '''DROP TABLE IF EXISTS Projects;'''
+            cursor.execute(delete_project)
             delete_admin = '''DROP TABLE IF EXISTS Admins;'''
             cursor.execute(delete_admin)
             delete_contractor = '''DROP TABLE IF EXISTS Contractors;'''
@@ -360,12 +360,13 @@ class InitApp:
                          CREATE TABLE ProjectMaterials (
                          project_material_id INT AUTO_INCREMENT PRIMARY KEY,
                          project_material_name VARCHAR(255) NOT NULL,
-                         project_material_price VARCHAR(255) NOT NULL
+                         project_material_price VARCHAR(255) NOT NULL,
+                         project_id INT, FOREIGN KEY (project_id) REFERENCES Projects(project_id)ON DELETE  CASCADE ON UPDATE CASCADE
                         )
                          '''
             cursor.execute(project_material)
             insert_project_material = '''
-                      INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค','1794.39');
+                      INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`,`project_id`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค','1794.39',1);
                       '''
             cursor.execute(insert_project_material)
             builder.commit()
@@ -385,12 +386,11 @@ class InitApp:
                      project_description VARCHAR(1000) NOT NULL,
                      customer_name VARCHAR(255) NOT NULL,
                      deadline DATE NOT NULL,
-                     contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE,
-                     project_material_id INT, FOREIGN KEY (project_material_id) REFERENCES ProjectMaterials(project_material_id)ON DELETE  CASCADE ON UPDATE CASCADE)
+                     contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE)
                      '''
             cursor.execute(project)
             insert_contractor = '''
-                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`,`contractor_id`,`project_material_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1,1);
+                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`,`contractor_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1);
                     '''
             cursor.execute(insert_contractor)
             builder.commit()
@@ -407,8 +407,9 @@ class InitApp:
             InitApp.build_table_admin()
             InitApp.build_table_contractor()
             InitApp.build_table_material()
-            InitApp.build_table_project_material()
             InitApp.build_table_project()
+            InitApp.build_table_project_material()
+            # InitApp.build_table_project()
             print('Complete build all tables')
         except:
             print('uncompleted build')
