@@ -36,3 +36,19 @@ class ProjectManagement(object):
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
+
+    @staticmethod
+    def get_all_project_material(project_id):
+        cursor = builder.cursor()
+        sql_generate_project = '''
+               SELECT *
+               FROM ProjectMaterials
+               WHERE ProjectMaterials.project_id = %s
+            '''
+        cursor.execute(sql_generate_project, (project_id,))
+        result = cursor.fetchall()
+        df = pd.DataFrame(result,
+                          columns=['project_material_id', 'project_material_name', 'project_material_price', 'project_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
