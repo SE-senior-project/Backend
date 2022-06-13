@@ -133,6 +133,7 @@ class FlaskController:
         material_type = request.json['material_type']
         return jsonify(ProjectManagement.get_all_selection_in_type(material_type))
 
+    @staticmethod
     @app.route("/Number_Material", methods=["POST"])
     def Number_material():
         project_material_total = request.json['project_material_total']
