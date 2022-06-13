@@ -361,12 +361,16 @@ class InitApp:
                          project_material_id INT AUTO_INCREMENT PRIMARY KEY,
                          project_material_name VARCHAR(255) NOT NULL,
                          project_material_price FLOAT,
-                         project_id INT, FOREIGN KEY (project_id) REFERENCES Projects(project_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                         project_material_total INT,
+                         project_id INT, 
+                         FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+                         ON DELETE  CASCADE 
+                         ON UPDATE CASCADE
                         )
                          '''
             cursor.execute(project_material)
             insert_project_material = '''
-                      INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`,`project_id`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค',1794.39, 1);
+                      INSERT INTO `ProjectMaterials` ( `project_material_id`,`project_material_name`,`project_material_price`, `project_material_total`,`project_id`) VALUES (NULL ,'คอนกรีตผสมเสร็จรูปลูกบาศก์ 180 กก./ตร.ซม. และ รูปทรงกระบอก 140กก./ตร.ซม. ตราซีแพค',1794.39, 1, 1);
                       '''
             cursor.execute(insert_project_material)
             builder.commit()
