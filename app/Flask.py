@@ -95,7 +95,20 @@ class FlaskController:
     def Get_all_materials():
         return jsonify(ProjectManagement.get_all_materials())
 
-FlaskController.Build_all_table()
+    @staticmethod
+    @app.route("/All_Projects", methods=["POST"])
+    def Get_all_project():
+        contractor_id = request.json['contractor_id']
+        print(contractor_id)
+        return jsonify(ProjectManagement.get_all_project(contractor_id))
+
+    @staticmethod
+    @app.route("/All_Category", methods=["GET"])
+    def Get_all_category():
+        return jsonify(ProjectManagement.get_all_category())
+
+
+# FlaskController.Build_all_table()
 if __name__ == '__main__':
     # from waitress import serve
     # serve(app, host="0.0.0.0", port=8080, debug=True)
