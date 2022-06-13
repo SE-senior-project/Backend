@@ -399,18 +399,15 @@ class InitApp:
 
     @staticmethod
     def build_all_table():
-        # check = True
-        # if check:
-        #     try:
-        InitApp.drop_table()
-        InitApp.build_table_user()
-        InitApp.build_table_admin()
-        InitApp.build_table_contractor()
-        InitApp.build_table_material()
-        InitApp.build_table_project_material()
-        InitApp.build_table_project()
-    #         print('build pass')
-    #     except:
-    #         print('build false')
-    # else:
-    #     pass
+        try:
+            InitApp.drop_table()
+            InitApp.build_table_user()
+            InitApp.build_table_admin()
+            InitApp.build_table_contractor()
+            InitApp.build_table_material()
+            InitApp.build_table_project_material()
+            InitApp.build_table_project()
+            print('Complete build all tables')
+        except:
+            print('uncompleted build')
+
