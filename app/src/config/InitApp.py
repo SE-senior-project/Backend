@@ -207,7 +207,7 @@ class InitApp:
                 if 125 <= i <= 141:
                     cursor.execute(sql_update_material_category, ('wood', i))
                 if 142 <= i <= 153:
-                    cursor.execute(sql_update_material_category, ('color_lacquer', i))
+                    cursor.execute(sql_update_material_category, (' _lacquer', i))
                 if 154 <= i <= 163:
                     cursor.execute(sql_update_material_category, ('door_window', i))
                 if 164 <= i <= 167:
@@ -217,7 +217,7 @@ class InitApp:
                 if 171 <= i <= 173:
                     cursor.execute(sql_update_material_category, ('building_material', i))
                 if i == 174:
-                    cursor.execute(sql_update_material_category, (' color_lacquer ', i))
+                    cursor.execute(sql_update_material_category, ('color_lacquer ', i))
                 if 175 <= i <= 176:
                     cursor.execute(sql_update_material_category, ('water_supply_pipes_fittings', i))
                 if 177 <= i <= 189:
