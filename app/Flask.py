@@ -108,8 +108,8 @@ class FlaskController:
         material_price = request.json['material_price']
         project_id = request.json['project_id']
         return jsonify(ProjectManagement.add_material(material_name, material_price, project_id))
-      
-    @staticmethod  
+
+    @staticmethod
     @app.route("/All_Projects", methods=["POST"])
     def Get_all_project():
         contractor_id = request.json['contractor_id']
@@ -125,6 +125,12 @@ class FlaskController:
     def Get_all_selection_type():
         material_category = request.json['material_category']
         return jsonify(ProjectManagement.get_all_selection_type(material_category))
+
+    @staticmethod
+    @app.route("/All_Material_Selection_Type", methods=["POST"])
+    def Get_all_selection_in_type():
+        material_type = request.json['material_type']
+        return jsonify(ProjectManagement.get_all_selection_in_type(material_type))
 
 
 # FlaskController.Build_all_table()

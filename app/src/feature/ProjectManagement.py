@@ -62,7 +62,7 @@ class ProjectManagement(object):
     def add_material(material_name, material_price, project_id):
         cursor = builder.cursor()
         try:
-            if(material_price < 0 or material_name == "" or project_id != int or material_price != int):
+            if (material_price < 0 or material_name == "" or project_id != int or material_price != int):
                 return {
                     "message": "invalid input"
                 }
@@ -82,7 +82,7 @@ class ProjectManagement(object):
             return {
                 "message": "add material unsuccessfully"
             }
-    
+
     @staticmethod
     def get_all_project(contractor_id):
         cursor = builder.cursor()
@@ -132,6 +132,24 @@ class ProjectManagement(object):
         df = pd.DataFrame(result,
                           columns=['material_type'])
         df = df.drop_duplicates(subset=['material_type'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def get_all_selection_in_type(material_type):
+        cursor = builder.cursor()
+        sql_type = '''
+                                      SELECT *
+                                      FROM Materials
+                                      WHERE material_type = %s
+                                   '''
+        cursor.execute(sql_type, (material_type,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['material_id', 'material_name', 'material_price', 'material_unit',
+                                   'material_category', 'material_type'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
