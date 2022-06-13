@@ -59,19 +59,19 @@ class ProjectManagement(object):
         return output
 
     @staticmethod
-    def add_material(material_name, material_price, project_id):
+    def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
-        if material_price < 0 or material_name == "" or type(project_id) != int:
+        if material_price < 0 or material_name == "" or type(project_id) != int or type(project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
         else:
             try:
                 sql_add_material = '''
-                    INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_id)
-                    VALUES (%s ,%s, %s)
+                    INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_material_total, ProjectMaterials.project_id)
+                    VALUES (%s ,%s, %s, %s)
                     '''
-                cursor.execute(sql_add_material, (material_name, material_price, project_id,))
+                cursor.execute(sql_add_material, (material_name, material_price, project_material_total, project_id,))
                 builder.commit()
                 print('insert pass')
                 return {
