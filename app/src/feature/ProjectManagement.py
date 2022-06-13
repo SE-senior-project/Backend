@@ -61,12 +61,12 @@ class ProjectManagement(object):
     @staticmethod
     def add_material(material_name, material_price, project_id):
         cursor = builder.cursor()
-        try:
-            if(material_price < 0 or material_name == "" or project_id != int or material_price != int):
-                return {
-                    "message": "invalid input"
-                }
-            else:
+        if material_price < 0 or material_name == "" or type(project_id) != int:
+            return {
+                "message": "invalid input"
+            }
+        else:
+            try:
                 sql_add_material = '''
                     INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_id)
                     VALUES (%s ,%s, %s)
@@ -77,8 +77,8 @@ class ProjectManagement(object):
                 return {
                     "message": "add material successfully"
                 }
-        except:
-            print('insert fail')
+            except:
+                print('insert fail')
             return {
                 "message": "add material unsuccessfully"
             }
