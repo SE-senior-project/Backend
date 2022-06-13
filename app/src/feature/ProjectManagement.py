@@ -86,12 +86,12 @@ class ProjectManagement(object):
     @staticmethod
     def get_all_project(contractor_id):
         cursor = builder.cursor()
-        sql_generate_project = '''
+        sql_all_project = '''
                    SELECT *
                    FROM Projects
                    WHERE Projects.contractor_id = %s
                 '''
-        cursor.execute(sql_generate_project, (contractor_id,))
+        cursor.execute(sql_all_project, (contractor_id,))
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
@@ -104,16 +104,34 @@ class ProjectManagement(object):
     @staticmethod
     def get_all_category():
         cursor = builder.cursor()
-        sql_generate_project = '''
-                               SELECT material_category
+        sql_category = '''
+                               SELECT material_category, material_id
                                FROM Materials
                             '''
-        cursor.execute(sql_generate_project)
+        cursor.execute(sql_category)
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
-                          columns=['category_name'])
-        df = df.drop_duplicates()
+                          columns=['category_name', 'category_id'])
+        df = df.drop_duplicates(subset=['category_name'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def get_all_selection_type(material_category):
+        cursor = builder.cursor()
+        sql_type = '''
+                                  SELECT material_type
+                                  FROM Materials
+                                  WHERE material_category = %s
+                               '''
+        cursor.execute(sql_type, (material_category,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['material_type'])
+        df = df.drop_duplicates(subset=['material_type'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
