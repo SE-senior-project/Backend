@@ -140,7 +140,7 @@ class FlaskController:
         project_material_id = request.json['project_material_id']
         return jsonify(ProjectManagement.number_material(project_material_total, project_material_id))
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
