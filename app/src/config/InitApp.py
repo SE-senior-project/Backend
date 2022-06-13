@@ -43,7 +43,7 @@ class InitApp:
             cursor.execute(user)
 
             insert_user = '''
-              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0),(NULL ,'contractor', 1);
+              INSERT INTO Users (`user_id`,`role`,`status`) VALUES (NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'admin', 1),(NULL ,'contractor', 1),(NULL ,'contractor', 0),(NULL ,'contractor', 1),(NULL ,'contractor', 0);
               '''
             cursor.execute(insert_user)
             builder.commit()
@@ -73,15 +73,17 @@ class InitApp:
             cursor.execute(contractor)
 
             insert_contractor = '''
-              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'kong','paingjai','kong@gmail.com',%s,1, 4),(NULL ,'fax','phonmongkhon','fax@gmail.com',%s,1, 5),(NULL ,'oat','sahachan','oat@gmail.com',%s,0, 6);
+              INSERT INTO Contractors (`contractor_id`,`first_name`,`last_name`,`email`,`password`,`active`,`user_id`) VALUES (NULL ,'ก้อง','เปียงใจ','kong@gmail.com',%s,1, 4),(NULL ,'แฟค','พุทธิแจ่ม','fax@gmail.com',%s,1, 5),(NULL ,'โอ๊ต','สหฌาณ','oat@gmail.com',%s,0, 6),(NULL ,'ปีเตอร์','แพนนี่','peter@gmail.com',%s,1, 7);
               '''
             pass1 = 'kong1234'
             pass2 = 'fax1234'
             pass3 = 'oat1234'
+            pass4 = 'peter1234'
             pass1 = hashlib.md5(pass1.encode()).hexdigest()
             pass2 = hashlib.md5(pass2.encode()).hexdigest()
             pass3 = hashlib.md5(pass3.encode()).hexdigest()
-            cursor.execute(insert_contractor, (pass1, pass2,pass3))
+            pass4 = hashlib.md5(pass4.encode()).hexdigest()
+            cursor.execute(insert_contractor, (pass1, pass2, pass3, pass4))
             builder.commit()
             print('Created Contractor')
         except:
@@ -410,4 +412,3 @@ class InitApp:
             print('Complete build all tables')
         except:
             print('uncompleted build')
-

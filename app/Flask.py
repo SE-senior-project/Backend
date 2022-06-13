@@ -95,7 +95,7 @@ class FlaskController:
     def Get_all_materials():
         return jsonify(ProjectManagement.get_all_materials())
 
-FlaskController.Build_all_table()
+# FlaskController.Build_all_table()
 if __name__ == '__main__':
     # from waitress import serve
     # serve(app, host="0.0.0.0", port=8080, debug=True)
