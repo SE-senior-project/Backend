@@ -134,36 +134,27 @@ class ProjectManagement(object):
                 }
 
     @staticmethod
-    def get_all_project(contractor_id):
-        if type(contractor_id) == int and contractor_id > 0:
-            cursor = builder.cursor()
-            sql_all_project = '''
-                       SELECT *
-                       FROM Projects
-                       WHERE Projects.contractor_id = %s
-                    '''
-            cursor.execute(sql_all_project, (contractor_id,))
-            result = cursor.fetchall()
-            if len(result) > 0:
-                datetime = result[0][4]
-                deadline = datetime.strftime('%d / %m / %Y')
-                edit = np.copy(result)
-                edit[0][4] = deadline
-                builder.commit()
-                df = pd.DataFrame(edit,
-                                  columns=['project_id', 'project_name', 'project_description',
-                                           'customer_name', 'deadline', 'contractor_id'])
-                json_result = df.to_json(orient="records")
-                output = json.loads(json_result)
-                return output
-            else:
-                return {
-                    "message": "fetching project unsuccessfully"
-                }
-        else:
-            return {
-                "message": "fetching project unsuccessfully"
-            }
+    def get_all_project(contractor_id, status):
+        cursor = builder.cursor()
+        sql_all_project = '''
+                   SELECT *
+                   FROM Projects
+                   WHERE Projects.contractor_id = %s AND Projects.status = %s
+                '''
+        cursor.execute(sql_all_project, (contractor_id, status,))
+        result = cursor.fetchall()
+        datetime = result[0][4]
+        deadline = datetime.strftime('%d / %m / %Y')
+        edit = np.copy(result)
+        edit[0][4] = deadline
+        builder.commit()
+        df = pd.DataFrame(edit,
+                          columns=['project_id', 'project_name', 'project_description',
+                                   'customer_name', 'deadline', 'status', 'contractor_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
 
     @staticmethod
     def get_all_category():
@@ -291,3 +282,17 @@ class ProjectManagement(object):
                             '''
         cursor.execute(sql_category, (project_material_id,))
         builder.commit()
+
+
+    @staticmethod
+    def active_status_project(status, project_id):
+        cursor = builder.cursor()
+        sql_increase = '''
+                   UPDATE Projects
+                   SET Projects.status = %s
+                   WHERE Projects.project_id = %s
+                '''
+        cursor.execute(sql_increase, (status, project_id))
+        builder.commit()
+
+
