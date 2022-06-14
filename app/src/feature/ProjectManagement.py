@@ -119,14 +119,14 @@ class ProjectManagement(object):
                 }
 
     @staticmethod
-    def get_all_project(contractor_id):
+    def get_all_project(contractor_id, status):
         cursor = builder.cursor()
         sql_all_project = '''
                    SELECT *
                    FROM Projects
-                   WHERE Projects.contractor_id = %s
+                   WHERE Projects.contractor_id = %s AND Projects.status = %s
                 '''
-        cursor.execute(sql_all_project, (contractor_id,))
+        cursor.execute(sql_all_project, (contractor_id, status,))
         result = cursor.fetchall()
         datetime = result[0][4]
         deadline = datetime.strftime('%d / %m / %Y')
@@ -135,7 +135,7 @@ class ProjectManagement(object):
         builder.commit()
         df = pd.DataFrame(edit,
                           columns=['project_id', 'project_name', 'project_description',
-                                   'customer_name', 'deadline', 'contractor_id'])
+                                   'customer_name', 'deadline', 'status', 'contractor_id'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
