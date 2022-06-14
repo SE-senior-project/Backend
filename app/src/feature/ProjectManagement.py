@@ -69,54 +69,68 @@ class ProjectManagement(object):
     @staticmethod
     def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
-        if material_price < 0 or material_name == "" or type(project_id) != int or type(
+        if type(material_name) != str or type(material_price) != float or material_price < 0 or material_name == "" or type(project_id) != int or type(
                 project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
         else:
-            sql_find_duplicate = '''
-                           SELECT *
-                           FROM ProjectMaterials
-                           WHERE project_material_name = %s
-                        '''
-            cursor.execute(sql_find_duplicate, (material_name,))
+            sql_latest_project_material_id = '''
+                                                SELECT project_id
+                                                FROM ProjectMaterials
+                                                ORDER BY project_id  ASC '''
+            cursor.execute(sql_latest_project_material_id)
             result = cursor.fetchall()
-            df = pd.DataFrame(result,
-                              columns=['project_material_id', 'project_material_name', 'project_material_price',
-                                       'project_material_total', 'project_id'])
-            if len(result) == 0:
-                try:
-                    sql_add_material = '''
-                     INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_material_total, ProjectMaterials.project_id)
-                        VALUES (%s ,%s, %s, %s)
-                    '''
-                    cursor.execute(sql_add_material,
-                                   (material_name, material_price, project_material_total, project_id,))
+            temp = json.dumps(result[len(result) - 1])
+            temp = temp.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\,!"\r\])' + U'\xa8'))
+            temp = int(temp)
+            if project_id <= temp:
+                sql_find_duplicate = '''
+                               SELECT *
+                               FROM ProjectMaterials
+                               WHERE project_material_name = %s
+                            '''
+                cursor.execute(sql_find_duplicate, (material_name,))
+                result = cursor.fetchall()
+                df = pd.DataFrame(result,
+                                  columns=['project_material_id', 'project_material_name', 'project_material_price',
+                                           'project_material_total', 'project_id'])
+                if len(result) == 0:
+                    try:
+                        sql_add_material = '''
+                         INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_material_total, ProjectMaterials.project_id)
+                            VALUES (%s ,%s, %s, %s)
+                        '''
+                        cursor.execute(sql_add_material,
+                                       (material_name, material_price, project_material_total, project_id,))
+                        builder.commit()
+                        print('insert pass')
+                        return {
+                            "message": "add material successfully"
+                        }
+                    except:
+                        print('insert fail')
+                else:
+                    sql_update = '''
+                                      UPDATE ProjectMaterials 
+                                      SET project_material_total = %s
+                                      WHERE project_material_id = %s
+                                   '''
+                    project_material_id = df['project_material_id'].iloc[0]
+                    num = df['project_material_total'].iloc[0]
+                    num = num + 1
+                    num = np.int16(num).item()
+                    project_material_id = np.int16(project_material_id).item()
+                    print(type(num))
+                    print(type(project_material_id))
+                    cursor.execute(sql_update, (num, project_material_id))
                     builder.commit()
-                    print('insert pass')
                     return {
                         "message": "add material successfully"
                     }
-                except:
-                    print('insert fail')
             else:
-                sql_update = '''
-                                  UPDATE ProjectMaterials 
-                                  SET project_material_total = %s
-                                  WHERE project_material_id = %s
-                               '''
-                project_material_id = df['project_material_id'].iloc[0]
-                num = df['project_material_total'].iloc[0]
-                num = num + 1
-                num = np.int16(num).item()
-                project_material_id = np.int16(project_material_id).item()
-                print(type(num))
-                print(type(project_material_id))
-                cursor.execute(sql_update, (num, project_material_id))
-                builder.commit()
                 return {
-                    "message": "add material successfully"
+                    "message": "invalid input"
                 }
 
     @staticmethod
