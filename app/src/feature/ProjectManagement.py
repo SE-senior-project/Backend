@@ -44,21 +44,26 @@ class ProjectManagement(object):
 
     @staticmethod
     def get_all_project_material(project_id):
-        cursor = builder.cursor()
-        sql_project_materials = '''
-               SELECT *
-               FROM ProjectMaterials
-               WHERE ProjectMaterials.project_id = %s
-            '''
-        cursor.execute(sql_project_materials, (project_id,))
-        result = cursor.fetchall()
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['project_material_id', 'project_material_name', 'project_material_price',
-                                   'project_material_total', 'project_id'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+        if type(project_id) == int:
+            cursor = builder.cursor()
+            sql_project_materials = '''
+                   SELECT *
+                   FROM ProjectMaterials
+                   WHERE ProjectMaterials.project_id = %s
+                '''
+            cursor.execute(sql_project_materials, (project_id,))
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['project_material_id', 'project_material_name', 'project_material_price',
+                                       'project_material_total', 'project_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+        else:
+            return {
+                "message": "fetching project unsuccessfully"
+            }
 
     @staticmethod
     def add_material(material_name, material_price, project_material_total, project_id):
