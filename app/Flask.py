@@ -142,7 +142,24 @@ class FlaskController:
         project_material_id = request.json['project_material_id']
         return jsonify(ProjectManagement.number_material(project_material_total, project_material_id))
 
-FlaskController.Build_all_table()
+    @staticmethod
+    @app.route("/Get_All_Total_Material_Selection", methods=["POST"])
+    def Get_all_total_material_selection():
+        project_id = request.json['project_id']
+        return jsonify(ProjectManagement.get_all_total_material_selection(project_id))
+
+    @staticmethod
+    @app.route("/Total_Material_Selection", methods=["GET"])
+    def Total_material_selection():
+        return jsonify(ProjectManagement.total_material_selection())
+
+    @staticmethod
+    @app.route("/Delete_Material_Seletion", methods=["POST"])
+    def Delete_material_seletion():
+        project_material_id = request.json['project_material_id']
+        return jsonify(ProjectManagement.delete_material_seletion(project_material_id))
+
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

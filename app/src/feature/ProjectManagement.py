@@ -191,7 +191,6 @@ class ProjectManagement(object):
     @staticmethod
     def number_material(project_material_total, project_material_id):
         cursor = builder.cursor()
-        print(project_material_total)
         sql_increase = '''
                    UPDATE ProjectMaterials 
                    SET ProjectMaterials.project_material_total = %s
@@ -199,3 +198,55 @@ class ProjectManagement(object):
                 '''
         cursor.execute(sql_increase, (project_material_total, project_material_id))
         builder.commit()
+
+    @staticmethod
+    def get_all_total_material_selection(project_id):
+        cursor = builder.cursor()
+        sql_category = '''
+                               SELECT *
+                               FROM ProjectMaterials
+                               WHERE ProjectMaterials.project_id = %s
+                            '''
+        cursor.execute(sql_category, (project_id,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['project_material_id', 'project_material_name', 'project_material_price', 'project_material_total', 'project_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def total_material_selection():
+        cursor = builder.cursor()
+        sql_category = '''
+                               SELECT project_material_price, project_material_total
+                               FROM ProjectMaterials
+                            '''
+        cursor.execute(sql_category)
+        result = cursor.fetchall()
+        add = 1
+        ans = 0
+        for i in result:
+            for j in i:
+                add = j * add
+            ans = add + ans
+            add = 1
+        total = [ans]
+        builder.commit()
+        df = pd.DataFrame(total,
+                          columns=['total'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def delete_material_seletion(project_material_id):
+        cursor = builder.cursor()
+        sql_category = '''
+                               DELETE FROM ProjectMaterials
+                               WHERE ProjectMaterials.project_material_id = %s
+                            '''
+        cursor.execute(sql_category, (project_material_id,))
+        builder.commit()
+
