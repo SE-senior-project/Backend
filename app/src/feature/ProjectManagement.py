@@ -25,7 +25,7 @@ class ProjectManagement(object):
         return output
 
     @staticmethod
-    def get_all_materials():
+    def get_all_material():
         cursor = builder.cursor()
         sql_generate_project = '''
                SELECT *
@@ -94,9 +94,6 @@ class ProjectManagement(object):
                     }
                 except:
                     print('insert fail')
-                return {
-                    "message": "add material unsuccessfully"
-                }
             else:
                 sql_update = '''
                                   UPDATE ProjectMaterials 
@@ -112,6 +109,9 @@ class ProjectManagement(object):
                 print(type(project_material_id))
                 cursor.execute(sql_update, (num, project_material_id))
                 builder.commit()
+                return {
+                    "message": "add material successfully"
+                }
 
     @staticmethod
     def get_all_project(contractor_id):

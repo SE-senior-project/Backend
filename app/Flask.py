@@ -92,8 +92,8 @@ class FlaskController:
 
     @staticmethod
     @app.route("/All_Materials", methods=["GET"])
-    def Get_all_materials():
-        return jsonify(ProjectManagement.get_all_materials())
+    def Get_all_material():
+        return jsonify(ProjectManagement.get_all_material())
 
     @staticmethod
     @app.route("/All_Project_Materials", methods=["POST"])
