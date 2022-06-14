@@ -255,3 +255,14 @@ class ProjectManagement(object):
         cursor.execute(sql_category, (project_material_id,))
         builder.commit()
 
+    @staticmethod
+    def active_status_project(status, project_id):
+        cursor = builder.cursor()
+        sql_increase = '''
+                   UPDATE Projects
+                   SET Projects.status = %s
+                   WHERE Projects.project_id = %s
+                '''
+        cursor.execute(sql_increase, (status, project_id))
+        builder.commit()
+
