@@ -108,9 +108,10 @@ class FlaskController:
         material_price = request.json['material_price']
         project_material_total = request.json['project_material_total']
         project_id = request.json['project_id']
-        return jsonify(ProjectManagement.add_material(material_name, material_price, project_material_total, project_id))
-      
-    @staticmethod  
+        return jsonify(
+            ProjectManagement.add_material(material_name, material_price, project_material_total, project_id))
+
+    @staticmethod
     @app.route("/All_Projects", methods=["POST"])
     def Get_all_project():
         contractor_id = request.json['contractor_id']
@@ -167,7 +168,8 @@ class FlaskController:
         project_id = request.json['project_id']
         return jsonify(ProjectManagement.active_status_project(status, project_id))
 
-FlaskController.Build_all_table()
+# FlaskController.Build_all_table()
+
 
 if __name__ == '__main__':
     # from waitress import serve
