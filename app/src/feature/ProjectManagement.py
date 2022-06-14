@@ -1,3 +1,5 @@
+import numpy as np
+
 from app.src.config.Service import *
 import pandas as pd
 import json
@@ -121,8 +123,12 @@ class ProjectManagement(object):
                 '''
         cursor.execute(sql_all_project, (contractor_id,))
         result = cursor.fetchall()
+        datetime = result[0][4]
+        deadline = datetime.strftime('%d / %m / %Y')
+        edit = np.copy(result)
+        edit[0][4] = deadline
         builder.commit()
-        df = pd.DataFrame(result,
+        df = pd.DataFrame(edit,
                           columns=['project_id', 'project_name', 'project_description',
                                    'customer_name', 'deadline', 'contractor_id'])
         json_result = df.to_json(orient="records")
