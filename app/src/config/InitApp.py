@@ -390,11 +390,15 @@ class InitApp:
                      project_description VARCHAR(1000) NOT NULL,
                      customer_name VARCHAR(255) NOT NULL,
                      deadline DATE NOT NULL,
+                     status BIT NOT NULL,
                      contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE)
                      '''
             cursor.execute(project)
             insert_contractor = '''
-                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`,`contractor_id`) VALUES (NULL ,'project I','project I is for testing project card','oat','2022-12-25', 1);
+                    INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`, `status`,`contractor_id`) VALUES (NULL ,'โปรเจคที่ 1','project I is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.','โอ๊ต','2022-12-25', 1, 1),(NULL ,'โปรเจคที่ 2','project II is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.','ก้อง','2022-12-25', 0, 1),(NULL ,'โปรเจคที่ 2','project II is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.','ก้อง','2022-12-25', 1, 1);
                     '''
             cursor.execute(insert_contractor)
             builder.commit()
