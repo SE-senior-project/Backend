@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import numpy as np
 
+
 class ProjectManagement(object):
     @staticmethod
     def generate_project(contractor_id):
@@ -44,7 +45,7 @@ class ProjectManagement(object):
 
     @staticmethod
     def get_all_project_material(project_id):
-        if type(project_id) == int:
+        if type(project_id) == int and project_id > 0:
             cursor = builder.cursor()
             sql_project_materials = '''
                    SELECT *
@@ -62,7 +63,7 @@ class ProjectManagement(object):
             return output
         else:
             return {
-                "message": "fetching project unsuccessfully"
+                "message": "fetching project material unsuccessfully"
             }
 
     @staticmethod
@@ -120,25 +121,35 @@ class ProjectManagement(object):
 
     @staticmethod
     def get_all_project(contractor_id):
-        cursor = builder.cursor()
-        sql_all_project = '''
-                   SELECT *
-                   FROM Projects
-                   WHERE Projects.contractor_id = %s
-                '''
-        cursor.execute(sql_all_project, (contractor_id,))
-        result = cursor.fetchall()
-        datetime = result[0][4]
-        deadline = datetime.strftime('%d / %m / %Y')
-        edit = np.copy(result)
-        edit[0][4] = deadline
-        builder.commit()
-        df = pd.DataFrame(edit,
-                          columns=['project_id', 'project_name', 'project_description',
-                                   'customer_name', 'deadline', 'contractor_id'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+        if type(contractor_id) == int and contractor_id > 0:
+            cursor = builder.cursor()
+            sql_all_project = '''
+                       SELECT *
+                       FROM Projects
+                       WHERE Projects.contractor_id = %s
+                    '''
+            cursor.execute(sql_all_project, (contractor_id,))
+            result = cursor.fetchall()
+            if len(result) > 0:
+                datetime = result[0][4]
+                deadline = datetime.strftime('%d / %m / %Y')
+                edit = np.copy(result)
+                edit[0][4] = deadline
+                builder.commit()
+                df = pd.DataFrame(edit,
+                                  columns=['project_id', 'project_name', 'project_description',
+                                           'customer_name', 'deadline', 'contractor_id'])
+                json_result = df.to_json(orient="records")
+                output = json.loads(json_result)
+                return output
+            else:
+                return {
+                    "message": "fetching project unsuccessfully"
+                }
+        else:
+            return {
+                "message": "fetching project unsuccessfully"
+            }
 
     @staticmethod
     def get_all_category():
@@ -159,40 +170,51 @@ class ProjectManagement(object):
 
     @staticmethod
     def get_all_selection_type(material_category):
-        cursor = builder.cursor()
-        sql_type = '''
-                                  SELECT material_type
-                                  FROM Materials
-                                  WHERE material_category = %s
-                               '''
-        cursor.execute(sql_type, (material_category,))
-        result = cursor.fetchall()
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['material_type'])
-        df = df.drop_duplicates(subset=['material_type'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+        if type(material_category) == str:
+            cursor = builder.cursor()
+            sql_type = '''
+                                      SELECT material_type
+                                      FROM Materials
+                                      WHERE material_category = %s
+                                   '''
+            cursor.execute(sql_type, (material_category,))
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['material_type'])
+            df = df.drop_duplicates(subset=['material_type'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+        else:
+            return {
+                "message": "fetching type unsuccessfully"
+            }
 
     @staticmethod
     def get_all_selection_in_type(material_type):
-        cursor = builder.cursor()
-        sql_type = '''
-                                      SELECT *
-                                      FROM Materials
-                                      WHERE material_type = %s
-                                   '''
-        cursor.execute(sql_type, (material_type,))
-        result = cursor.fetchall()
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['material_id', 'material_name', 'material_price', 'material_unit',
-                                   'material_category', 'material_type'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+        if type(material_type) == str:
+            cursor = builder.cursor()
+            sql_type = '''
+                                          SELECT *
+                                          FROM Materials
+                                          WHERE material_type = %s
+                                       '''
+            cursor.execute(sql_type, (material_type,))
+            result = cursor.fetchall()
+            builder.commit()
+            df = pd.DataFrame(result,
+                              columns=['material_id', 'material_name', 'material_price', 'material_unit',
+                                       'material_category', 'material_type'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+        else:
+            return {
+                "message": "fetching unit type unsuccessfully"
+            }
 
+    ######### new update ########
     @staticmethod
     def number_material(project_material_total, project_material_id):
         cursor = builder.cursor()
@@ -216,7 +238,8 @@ class ProjectManagement(object):
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
-                          columns=['project_material_id', 'project_material_name', 'project_material_price', 'project_material_total', 'project_id'])
+                          columns=['project_material_id', 'project_material_name', 'project_material_price',
+                                   'project_material_total', 'project_id'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
@@ -254,4 +277,3 @@ class ProjectManagement(object):
                             '''
         cursor.execute(sql_category, (project_material_id,))
         builder.commit()
-
