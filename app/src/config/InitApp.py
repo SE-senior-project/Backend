@@ -397,8 +397,8 @@ class InitApp:
             insert_contractor = '''
                     INSERT INTO `Projects` ( `project_id`,`project_name`,`project_description`,`customer_name`,`deadline`, `status`,`contractor_id`) VALUES (NULL ,'โปรเจคที่ 1','project I is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua.','โอ๊ต','2022-12-25', 1, 1),(NULL ,'โปรเจคที่ 2','project II is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.','ก้อง','2022-12-25', 0, 1),(NULL ,'โปรเจคที่ 2','project II is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.','ก้อง','2022-12-25', 1, 1);
+        tempor incididunt ut labore et dolore magna aliqua.','ก้อง','2022-12-25', 0, 1),(NULL ,'โปรเจคที่ 3','project II is for testing project card Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.','ปั้น','2022-12-10', 1, 1);
                     '''
             cursor.execute(insert_contractor)
             builder.commit()

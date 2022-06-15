@@ -168,6 +168,18 @@ class FlaskController:
         project_id = request.json['project_id']
         return jsonify(ProjectManagement.active_status_project(status, project_id))
 
+    @staticmethod
+    @app.route("/Add_Project", methods=["POST"])
+    def add_project():
+        project_name = request.json['project_name']
+        customer_name = request.json['customer_name']
+        project_description = request.json['project_description']
+        deadline = request.json['deadline']
+        status = request.json['status']
+        contractor_id = request.json['contractor_id']
+        return jsonify(ProjectManagement.add_project(project_name, customer_name, project_description,
+                                                     deadline, status, contractor_id))
+
 # FlaskController.Build_all_table()
 
 

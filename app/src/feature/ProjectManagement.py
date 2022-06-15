@@ -8,22 +8,23 @@ import numpy as np
 
 class ProjectManagement(object):
     @staticmethod
-    def generate_project(contractor_id):
-        cursor = builder.cursor()
-        sql_generate_project = '''
-           SELECT *
-           FROM Projects
-           WHERE Projects.contractor_id = %s
-        '''
-        cursor.execute(sql_generate_project, (contractor_id,))
-        result = cursor.fetchall()
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['project_id', 'project_name', 'project_description', 'customer_name', 'date_line',
-                                   'contractor_id ', 'project_material_id '])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+    def add_project(project_name, customer_name, project_description, deadline, status, contractor_id):
+        try:
+            cursor = builder.cursor()
+            sql_generate_project = '''
+                   INSERT INTO Projects (Projects.project_name, customer_name, project_description, deadline, status, contractor_id)
+                VALUES (%s ,%s, %s, %s, %s, %s)
+                '''
+            cursor.execute(sql_generate_project,
+                           (project_name, customer_name, project_description, deadline, status, contractor_id))
+            builder.commit()
+            return {
+                "message": "add project successfully"
+            }
+        except:
+            return {
+                "message": "add project unsuccessfully"
+            }
 
     @staticmethod
     def get_all_material():
@@ -69,68 +70,56 @@ class ProjectManagement(object):
     @staticmethod
     def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
-        if type(material_name) != str or type(material_price) != float or material_price < 0 or material_name == "" or type(project_id) != int or type(
+        if type(material_name) != str or type(
+                material_price) != float or material_price < 0 or material_name == "" or type(
+                project_id) != int or type(
                 project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
         else:
-            sql_latest_project_material_id = '''
-                                                SELECT project_id
-                                                FROM ProjectMaterials
-                                                ORDER BY project_id  ASC '''
-            cursor.execute(sql_latest_project_material_id)
-            result = cursor.fetchall()
-            temp = json.dumps(result[len(result) - 1])
-            temp = temp.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\,!"\r\])' + U'\xa8'))
-            temp = int(temp)
-            if project_id <= temp:
-                sql_find_duplicate = '''
+            sql_find_duplicate = '''
                                SELECT *
                                FROM ProjectMaterials
                                WHERE project_material_name = %s
                             '''
-                cursor.execute(sql_find_duplicate, (material_name,))
-                result = cursor.fetchall()
-                df = pd.DataFrame(result,
-                                  columns=['project_material_id', 'project_material_name', 'project_material_price',
-                                           'project_material_total', 'project_id'])
-                if len(result) == 0:
-                    try:
-                        sql_add_material = '''
+            cursor.execute(sql_find_duplicate, (material_name,))
+            result = cursor.fetchall()
+            df = pd.DataFrame(result,
+                              columns=['project_material_id', 'project_material_name', 'project_material_price',
+                                       'project_material_total', 'project_id'])
+            if len(result) == 0:
+                try:
+                    sql_add_material = '''
                          INSERT INTO ProjectMaterials (ProjectMaterials.project_material_name, ProjectMaterials.project_material_price, ProjectMaterials.project_material_total, ProjectMaterials.project_id)
                             VALUES (%s ,%s, %s, %s)
                         '''
-                        cursor.execute(sql_add_material,
-                                       (material_name, material_price, project_material_total, project_id,))
-                        builder.commit()
-                        print('insert pass')
-                        return {
-                            "message": "add material successfully"
-                        }
-                    except:
-                        print('insert fail')
-                else:
-                    sql_update = '''
+                    cursor.execute(sql_add_material,
+                                   (material_name, material_price, project_material_total, project_id,))
+                    builder.commit()
+                    print('insert pass')
+                    return {
+                        "message": "add material successfully"
+                    }
+                except:
+                    print('insert fail')
+            else:
+                sql_update = '''
                                       UPDATE ProjectMaterials 
                                       SET project_material_total = %s
                                       WHERE project_material_id = %s
                                    '''
-                    project_material_id = df['project_material_id'].iloc[0]
-                    num = df['project_material_total'].iloc[0]
-                    num = num + 1
-                    num = np.int16(num).item()
-                    project_material_id = np.int16(project_material_id).item()
-                    print(type(num))
-                    print(type(project_material_id))
-                    cursor.execute(sql_update, (num, project_material_id))
-                    builder.commit()
-                    return {
-                        "message": "add material successfully"
-                    }
-            else:
+                project_material_id = df['project_material_id'].iloc[0]
+                num = df['project_material_total'].iloc[0]
+                num = num + 1
+                num = np.int16(num).item()
+                project_material_id = np.int16(project_material_id).item()
+                print(type(num))
+                print(type(project_material_id))
+                cursor.execute(sql_update, (num, project_material_id))
+                builder.commit()
                 return {
-                    "message": "invalid input"
+                    "message": "add material successfully"
                 }
 
     @staticmethod
@@ -143,18 +132,27 @@ class ProjectManagement(object):
                 '''
         cursor.execute(sql_all_project, (contractor_id, status,))
         result = cursor.fetchall()
-        datetime = result[0][4]
-        deadline = datetime.strftime('%d / %m / %Y')
         edit = np.copy(result)
-        edit[0][4] = deadline
-        builder.commit()
-        df = pd.DataFrame(edit,
-                          columns=['project_id', 'project_name', 'project_description',
-                                   'customer_name', 'deadline', 'status', 'contractor_id'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
-
+        if result:
+            print(result)
+            count = 0
+            for i in result:
+                datetime = i[4]
+                deadline = datetime.strftime('%d / %m / %Y')
+                edit[count][4] = deadline
+                print(edit[count][4])
+                count = count + 1
+            builder.commit()
+            df = pd.DataFrame(edit,
+                              columns=['project_id', 'project_name', 'project_description',
+                                       'customer_name', 'deadline', 'status', 'contractor_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+        else:
+            return {
+                "message": "get project unsuccessfully"
+            }
 
     @staticmethod
     def get_all_category():
@@ -239,6 +237,7 @@ class ProjectManagement(object):
                                FROM ProjectMaterials
                                WHERE ProjectMaterials.project_id = %s
                             '''
+        print(project_id)
         cursor.execute(sql_category, (project_id,))
         result = cursor.fetchall()
         builder.commit()
@@ -275,24 +274,37 @@ class ProjectManagement(object):
 
     @staticmethod
     def delete_material_seletion(project_material_id):
-        cursor = builder.cursor()
-        sql_category = '''
-                               DELETE FROM ProjectMaterials
-                               WHERE ProjectMaterials.project_material_id = %s
-                            '''
-        cursor.execute(sql_category, (project_material_id,))
-        builder.commit()
-
+        try:
+            cursor = builder.cursor()
+            sql_category = '''
+                                   DELETE FROM ProjectMaterials
+                                   WHERE ProjectMaterials.project_material_id = %s
+                                '''
+            cursor.execute(sql_category, (project_material_id,))
+            builder.commit()
+            return {
+                "message": "delete successfully"
+            }
+        except:
+            return {
+                "message": "delete unsuccessfully"
+            }
 
     @staticmethod
     def active_status_project(status, project_id):
-        cursor = builder.cursor()
-        sql_increase = '''
-                   UPDATE Projects
-                   SET Projects.status = %s
-                   WHERE Projects.project_id = %s
-                '''
-        cursor.execute(sql_increase, (status, project_id))
-        builder.commit()
-
-
+        try:
+            cursor = builder.cursor()
+            sql_increase = '''
+                       UPDATE Projects
+                       SET Projects.status = %s
+                       WHERE Projects.project_id = %s
+                    '''
+            cursor.execute(sql_increase, (status, project_id))
+            builder.commit()
+            return {
+                "message": "active status project successfully"
+            }
+        except:
+            return {
+                "message": "active status project unsuccessfully"
+            }
