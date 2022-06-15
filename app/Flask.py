@@ -151,9 +151,10 @@ class FlaskController:
         return jsonify(ProjectManagement.get_all_total_material_selection(project_id))
 
     @staticmethod
-    @app.route("/Total_Material_Selection", methods=["GET"])
+    @app.route("/Total_Material_Selection", methods=["POST"])
     def Total_material_selection():
-        return jsonify(ProjectManagement.total_material_selection())
+        project_id = request.json['project_id']
+        return jsonify(ProjectManagement.total_material_selection(project_id))
 
     @staticmethod
     @app.route("/Delete_Material_Seletion", methods=["POST"])

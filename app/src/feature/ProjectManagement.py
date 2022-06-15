@@ -249,28 +249,34 @@ class ProjectManagement(object):
         return output
 
     @staticmethod
-    def total_material_selection():
-        cursor = builder.cursor()
-        sql_category = '''
-                               SELECT project_material_price, project_material_total
-                               FROM ProjectMaterials
-                            '''
-        cursor.execute(sql_category)
-        result = cursor.fetchall()
-        add = 1
-        ans = 0
-        for i in result:
-            for j in i:
-                add = j * add
-            ans = add + ans
+    def total_material_selection(project_id):
+        try:
+            cursor = builder.cursor()
+            sql_category = '''
+                                   SELECT project_material_price, project_material_total
+                                   FROM ProjectMaterials
+                                   WHERE ProjectMaterials.project_id = %s
+                                '''
+            cursor.execute(sql_category, (project_id,))
+            result = cursor.fetchall()
             add = 1
-        total = [ans]
-        builder.commit()
-        df = pd.DataFrame(total,
-                          columns=['total'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+            ans = 0
+            for i in result:
+                for j in i:
+                    add = j * add
+                ans = add + ans
+                add = 1
+            total = [ans]
+            builder.commit()
+            df = pd.DataFrame(total,
+                              columns=['total'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+        except:
+            return {
+                "message": "get total material selection successfully"
+            }
 
     @staticmethod
     def delete_material_seletion(project_material_id):
