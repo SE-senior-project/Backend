@@ -279,7 +279,7 @@ class ProjectManagement(object):
             }
 
     @staticmethod
-    def delete_material_seletion(project_material_id):
+    def delete_material_selection(project_material_id):
         try:
             cursor = builder.cursor()
             sql_category = '''

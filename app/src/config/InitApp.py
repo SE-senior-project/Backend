@@ -170,6 +170,7 @@ class InitApp:
                            '''
             for i in range(1, n, 1):
                 val_name = str(material_name[i])
+                val_name = val_name.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
                 val_unit = str(material_unit[i])
                 val_price = str(material_price[i])
                 cursor.execute(insert_material, (val_name, val_price, val_unit))
@@ -181,25 +182,25 @@ class InitApp:
                 if 14 <= i <= 22:
                     cursor.execute(sql_update_material_category, ('เหล็ก', i))
                 if 23 <= i <= 26:
-                    cursor.execute(sql_update_material_category, ('หลังคา/เพดาน', i))
+                    cursor.execute(sql_update_material_category, ('หลังคาและเพดาน', i))
                 if 27 <= i <= 31:
                     cursor.execute(sql_update_material_category, ('เหล็ก', i))
                 if 32 <= i <= 40:
                     cursor.execute(sql_update_material_category, ('งานไฟฟ้า', i))
                 if 41 <= i <= 90:
-                    cursor.execute(sql_update_material_category, ('ท่อประปา/ข้อต่อ', i))
+                    cursor.execute(sql_update_material_category, ('ท่อประปาและข้อต่อ', i))
                 if 91 <= i <= 103:
-                    cursor.execute(sql_update_material_category, ('หลังคา/เพดาน', i))
+                    cursor.execute(sql_update_material_category, ('หลังคาและเพดาน', i))
                 if 104 <= i <= 106:
                     cursor.execute(sql_update_material_category, ('ไม้', i))
                 if 107 <= i <= 110:
-                    cursor.execute(sql_update_material_category, ('หลังคา/เพดาน', i))
+                    cursor.execute(sql_update_material_category, ('หลังคาและเพดาน', i))
                 if 111 <= i <= 113:
                     cursor.execute(sql_update_material_category, ('วัสดุปูพื้น', i))
                 if 114 <= i <= 115:
                     cursor.execute(sql_update_material_category, ('กระจก', i))
                 if 116 <= i <= 117:
-                    cursor.execute(sql_update_material_category, ('หลังคา/เพดาน', i))
+                    cursor.execute(sql_update_material_category, ('หลังคาและเพดาน', i))
                 if 118 <= i <= 120:
                     cursor.execute(sql_update_material_category, ('วัสดุปูพื้น', i))
                 if 121 <= i <= 124:
@@ -207,27 +208,27 @@ class InitApp:
                 if 125 <= i <= 141:
                     cursor.execute(sql_update_material_category, ('ไม้', i))
                 if 142 <= i <= 153:
-                    cursor.execute(sql_update_material_category, ('สี/อุปกรณ์ทาสี', i))
+                    cursor.execute(sql_update_material_category, ('สีและอุปกรณ์ทาสี', i))
                 if 154 <= i <= 163:
-                    cursor.execute(sql_update_material_category, ('ประตู/หน้าต่าง', i))
+                    cursor.execute(sql_update_material_category, ('ประตูและหน้าต่าง', i))
                 if 164 <= i <= 167:
                     cursor.execute(sql_update_material_category, ('เหล็ก', i))
                 if 168 <= i <= 170:
-                    cursor.execute(sql_update_material_category, ('ประตู/หน้าต่าง', i))
+                    cursor.execute(sql_update_material_category, ('ประตูและหน้าต่าง', i))
                 if 171 <= i <= 173:
                     cursor.execute(sql_update_material_category, ('วัสดุก่อสร้าง', i))
                 if i == 174:
-                    cursor.execute(sql_update_material_category, ('สี/อุปกรณ์ทาสี', i))
+                    cursor.execute(sql_update_material_category, ('สีและอุปกรณ์ทาสี', i))
                 if 175 <= i <= 176:
-                    cursor.execute(sql_update_material_category, ('ท่อประปา/ข้อต่อ', i))
+                    cursor.execute(sql_update_material_category, ('ท่อประปาและข้อต่อ', i))
                 if 177 <= i <= 189:
                     cursor.execute(sql_update_material_category, ('วัสดุก่อสร้าง', i))
                 if 190 <= i <= 195:
-                    cursor.execute(sql_update_material_category, ('ท่อประปา/ข้อต่อ', i))
+                    cursor.execute(sql_update_material_category, ('ท่อประปาและข้อต่อ', i))
                 if 196 <= i <= 201:
                     cursor.execute(sql_update_material_category, ('งานไฟฟ้า', i))
                 if 202 <= i <= 212:
-                    cursor.execute(sql_update_material_category, ('ท่อประปา/ข้อต่อ', i))
+                    cursor.execute(sql_update_material_category, ('ท่อประปาและข้อต่อ', i))
             # update_type_phase
             sql_update_material_type = '''UPDATE Materials SET material_type = %s  WHERE material_id = %s'''
             for i in range(1, n, 1):
@@ -296,15 +297,15 @@ class InitApp:
                 if 152 <= i <= 153:
                     cursor.execute(sql_update_material_type, ('สารจำพวกเคลือบ', i))
                 if 154 <= i <= 157:
-                    cursor.execute(sql_update_material_type, ('ไม้อัดสัก', i))
+                    cursor.execute(sql_update_material_type, ('ประตูไม้อัดสัก', i))
                 if 158 <= i <= 161:
-                    cursor.execute(sql_update_material_type, ('ไม้อัดยาง', i))
+                    cursor.execute(sql_update_material_type, ('ประตูไม้อัดยาง', i))
                 if 162 <= i <= 163:
                     cursor.execute(sql_update_material_type, ('วงกบ', i))
                 if 164 <= i <= 167:
                     cursor.execute(sql_update_material_type, ('ตะปู', i))
                 if 168 <= i <= 169:
-                    cursor.execute(sql_update_material_type, ('บานพับประตู', i))
+                    cursor.execute(sql_update_material_type, ('บานพับ', i))
                 if i == 170:
                     cursor.execute(sql_update_material_type, ('กลอนประตู', i))
                 if 171 <= i <= 172:
@@ -326,7 +327,7 @@ class InitApp:
                 if 187 <= i <= 189:
                     cursor.execute(sql_update_material_type, ('หิน', i))
                 if 190 <= i <= 192:
-                    cursor.execute(sql_update_material_type, ('เทป', i))
+                    cursor.execute(sql_update_material_type, ('ก๊อกน้ำ', i))
                 if 193 <= i <= 195:
                     cursor.execute(sql_update_material_type, ('ถัง', i))
                 if i == 196:
@@ -342,7 +343,7 @@ class InitApp:
                 if 206 <= i <= 207:
                     cursor.execute(sql_update_material_type, ('อ่างล้างหน้า', i))
                 if 208 <= i <= 210:
-                    cursor.execute(sql_update_material_type, ('ที่วางสบู่ ', i))
+                    cursor.execute(sql_update_material_type, ('ที่วางสบู่', i))
                 if 211 <= i <= 212:
                     cursor.execute(sql_update_material_type, ('ที่ใส่กระดาษชำระ', i))
 
