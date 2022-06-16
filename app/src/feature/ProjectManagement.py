@@ -314,3 +314,21 @@ class ProjectManagement(object):
             return {
                 "message": "active status project unsuccessfully"
             }
+
+    @staticmethod
+    def search_result(material_name):
+        cursor = builder.cursor()
+        sql_search = '''
+                                                  SELECT *
+                                                  FROM Materials
+                                                  WHERE material_name = %s
+                                               '''
+        cursor.execute(sql_search, (material_name,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['material_id', 'material_name', 'material_price', 'material_unit',
+                                   'material_category', 'material_type'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output

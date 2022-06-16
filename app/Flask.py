@@ -181,7 +181,13 @@ class FlaskController:
         return jsonify(ProjectManagement.add_project(project_name, customer_name, project_description,
                                                      deadline, status, contractor_id))
 
-# FlaskController.Build_all_table()
+    @staticmethod
+    @app.route("/Search_Result", methods=["POST"])
+    def Search_result():
+        material_name = request.json['material_name']
+        return jsonify(ProjectManagement.search_result(material_name))
+
+FlaskController.Build_all_table()
 
 
 if __name__ == '__main__':
