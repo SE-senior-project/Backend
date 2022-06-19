@@ -11,6 +11,11 @@ class ProjectManagement(object):
     def add_project(project_name, customer_name, project_description, deadline, status, contractor_id):
         try:
             cursor = builder.cursor()
+            if type(project_name) != str or type(customer_name) != str or type(project_description) != str \
+                or type(status) != int or type(contractor_id) != int or contractor_id < 1 or status < 0 or status > 1:
+                return {
+                    "message": "invalid input"
+                }
             sql_generate_project = '''
                    INSERT INTO Projects (Projects.project_name, customer_name, project_description, deadline, status, contractor_id)
                 VALUES (%s ,%s, %s, %s, %s, %s)
@@ -124,6 +129,10 @@ class ProjectManagement(object):
 
     @staticmethod
     def get_all_project(contractor_id, status):
+        if type(contractor_id) != int or type(status) != int or contractor_id <= 0 or status > 1:
+            return {
+                "message": "get project unsuccessfully"
+            }
         cursor = builder.cursor()
         sql_all_project = '''
                    SELECT *
@@ -221,6 +230,10 @@ class ProjectManagement(object):
     @staticmethod
     def number_material(project_material_total, project_material_id):
         cursor = builder.cursor()
+        if type(project_material_total) != int or type(project_material_id) != int or project_material_total <= 0 or project_material_id > 1:
+            return {
+                "message": "number material is update unsuccessfully."
+            }
         sql_increase = '''
                    UPDATE ProjectMaterials 
                    SET ProjectMaterials.project_material_total = %s
@@ -228,6 +241,9 @@ class ProjectManagement(object):
                 '''
         cursor.execute(sql_increase, (project_material_total, project_material_id))
         builder.commit()
+        return {
+            "message": "number material is update successfully."
+        }
 
     @staticmethod
     def get_all_total_material_selection(project_id):
@@ -259,6 +275,10 @@ class ProjectManagement(object):
                                 '''
             cursor.execute(sql_category, (project_id,))
             result = cursor.fetchall()
+            if len(result) == 0 or type(project_id) != int:
+                return {
+                    "message": "no this project_id in the database"
+                }
             add = 1
             ans = 0
             for i in result:
@@ -275,13 +295,17 @@ class ProjectManagement(object):
             return output
         except:
             return {
-                "message": "get total material selection successfully"
+                "message": "get total material selection unsuccessfully"
             }
 
     @staticmethod
     def delete_material_selection(project_material_id):
         try:
             cursor = builder.cursor()
+            if type(project_material_id) != int or project_material_id < 1:
+                return {
+                    "message": "unknown this project_material_id"
+                }
             sql_category = '''
                                    DELETE FROM ProjectMaterials
                                    WHERE ProjectMaterials.project_material_id = %s
@@ -300,6 +324,10 @@ class ProjectManagement(object):
     def active_status_project(status, project_id):
         try:
             cursor = builder.cursor()
+            if type(status) != int or type(project_id) != int or project_id < 1 or status > 1 or status < 0:
+                return {
+                    "message": "unknown this project_id"
+                }
             sql_increase = '''
                        UPDATE Projects
                        SET Projects.status = %s
@@ -314,3 +342,25 @@ class ProjectManagement(object):
             return {
                 "message": "active status project unsuccessfully"
             }
+
+    @staticmethod
+    def search_result(material_name):
+        cursor = builder.cursor()
+        if type(material_name) != str:
+            return {
+                "message": "invalid input"
+            }
+        sql_search = '''
+                                                  SELECT *
+                                                  FROM Materials
+                                                  WHERE material_name = %s
+                                               '''
+        cursor.execute(sql_search, (material_name,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['material_id', 'material_name', 'material_price', 'material_unit',
+                                   'material_category', 'material_type'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
