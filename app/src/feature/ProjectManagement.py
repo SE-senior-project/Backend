@@ -44,36 +44,36 @@ class ProjectManagement(object):
         output = json.loads(json_result)
         return output
 
-    @staticmethod
-    def get_all_project_material(project_id):
-        if type(project_id) == int and project_id > 0:
-            cursor = builder.cursor()
-            sql_project_materials = '''
-                   SELECT *
-                   FROM ProjectMaterials
-                   WHERE ProjectMaterials.project_id = %s
-                '''
-            cursor.execute(sql_project_materials, (project_id,))
-            result = cursor.fetchall()
-            builder.commit()
-            df = pd.DataFrame(result,
-                              columns=['project_material_id', 'project_material_name', 'project_material_price',
-                                       'project_material_total', 'project_id'])
-            json_result = df.to_json(orient="records")
-            output = json.loads(json_result)
-            return output
-        else:
-            return {
-                "message": "fetching project material unsuccessfully"
-            }
+    # @staticmethod
+    # def get_all_project_material(project_id):
+    #     if type(project_id) == int and project_id > 0:
+    #         cursor = builder.cursor()
+    #         sql_project_materials = '''
+    #                SELECT *
+    #                FROM ProjectMaterials
+    #                WHERE ProjectMaterials.project_id = %s
+    #             '''
+    #         cursor.execute(sql_project_materials, (project_id,))
+    #         result = cursor.fetchall()
+    #         builder.commit()
+    #         df = pd.DataFrame(result,
+    #                           columns=['project_material_id', 'project_material_name', 'project_material_price',
+    #                                    'project_material_total', 'project_id'])
+    #         json_result = df.to_json(orient="records")
+    #         output = json.loads(json_result)
+    #         return output
+    #     else:
+    #         return {
+    #             "message": "fetching project material unsuccessfully"
+    #         }
 
     @staticmethod
     def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
         if type(material_name) != str or type(
                 material_price) != float or material_price < 0 or material_name == "" or type(
-                project_id) != int or type(
-                project_material_total) != int or project_material_total < 1:
+            project_id) != int or type(
+            project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
@@ -279,7 +279,7 @@ class ProjectManagement(object):
             }
 
     @staticmethod
-    def delete_material_seletion(project_material_id):
+    def delete_material_selection(project_material_id):
         try:
             cursor = builder.cursor()
             sql_category = '''

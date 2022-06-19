@@ -15,4 +15,8 @@ def create_server():
     return db
 
 
-builder = create_server()
+try:
+    builder = create_server()
+    print('can connect')
+except:
+    print('cannot connect')

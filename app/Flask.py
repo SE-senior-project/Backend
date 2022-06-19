@@ -95,11 +95,11 @@ class FlaskController:
     def Get_all_material():
         return jsonify(ProjectManagement.get_all_material())
 
-    @staticmethod
-    @app.route("/All_Project_Materials", methods=["POST"])
-    def Get_all_project_material():
-        project_id = request.json['project_id']
-        return jsonify(ProjectManagement.get_all_project_material(project_id))
+    # @staticmethod
+    # @app.route("/All_Project_Materials", methods=["POST"])
+    # def Get_all_project_material():
+    #     project_id = request.json['project_id']
+    #     return jsonify(ProjectManagement.get_all_project_material(project_id))
 
     @staticmethod
     @app.route("/Add_Material", methods=["POST"])
@@ -157,10 +157,10 @@ class FlaskController:
         return jsonify(ProjectManagement.total_material_selection(project_id))
 
     @staticmethod
-    @app.route("/Delete_Material_Seletion", methods=["POST"])
-    def Delete_material_seletion():
+    @app.route("/Delete_Material_Selection", methods=["POST"])
+    def Delete_material_selection():
         project_material_id = request.json['project_material_id']
-        return jsonify(ProjectManagement.delete_material_seletion(project_material_id))
+        return jsonify(ProjectManagement.delete_material_selection(project_material_id))
 
     @staticmethod
     @app.route("/Active_Status_Project", methods=["POST"])
@@ -181,7 +181,7 @@ class FlaskController:
         return jsonify(ProjectManagement.add_project(project_name, customer_name, project_description,
                                                      deadline, status, contractor_id))
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 
 if __name__ == '__main__':
