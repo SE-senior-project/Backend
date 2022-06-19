@@ -157,10 +157,10 @@ class FlaskController:
         return jsonify(ProjectManagement.total_material_selection(project_id))
 
     @staticmethod
-    @app.route("/Delete_Material_Seletion", methods=["POST"])
-    def Delete_material_seletion():
+    @app.route("/Delete_Material_Selection", methods=["POST"])
+    def Delete_material_selection():
         project_material_id = request.json['project_material_id']
-        return jsonify(ProjectManagement.delete_material_seletion(project_material_id))
+        return jsonify(ProjectManagement.delete_material_selection(project_material_id))
 
     @staticmethod
     @app.route("/Active_Status_Project", methods=["POST"])

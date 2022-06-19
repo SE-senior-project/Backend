@@ -299,7 +299,7 @@ class ProjectManagement(object):
             }
 
     @staticmethod
-    def delete_material_seletion(project_material_id):
+    def delete_material_selection(project_material_id):
         try:
             cursor = builder.cursor()
             if type(project_material_id) != int or project_material_id < 1:
