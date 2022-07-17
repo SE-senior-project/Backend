@@ -187,8 +187,11 @@ class FlaskController:
         material_name = request.json['material_name']
         return jsonify(ProjectManagement.search_result(material_name))
 
-FlaskController.Build_all_table()
+    # ###################### BOQ #########################
+    # waiting for doing.
 
+
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
