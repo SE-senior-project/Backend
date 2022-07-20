@@ -7,10 +7,12 @@
 # db = SQLAlchemy(app)
 
 from flask import Flask, request, jsonify
+
 from src.config.InitApp import *
 from src.feature.Auth import *
 from src.feature.Admin import *
 from src.feature.ProjectManagement import *
+from src.feature.BOQ import *
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -189,9 +191,20 @@ class FlaskController:
 
     # ###################### BOQ #########################
     # waiting for doing.
+    @staticmethod
+    @app.route("/All_BOQ_List", methods=["GET"])
+    def Get_all_BOQ_list():
+        return jsonify(BOQ.get_all_BOQ_list(1))
+
+    @staticmethod
+    @app.route("/Update_BOQ_List", methods=["POST"])
+    def Update_BOQ_list():
+        BOQ_list_id = request.json['BOQ_list_id']
+        list_name = request.json['list_name']
+        return jsonify(BOQ.update_BOQ_list(list_name, BOQ_list_id))
 
 
-FlaskController.Build_all_table()
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

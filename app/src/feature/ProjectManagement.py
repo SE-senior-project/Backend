@@ -1,5 +1,3 @@
-import numpy as np
-
 from app.src.config.Service import *
 import pandas as pd
 import json

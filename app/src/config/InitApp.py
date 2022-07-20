@@ -457,7 +457,7 @@ class InitApp:
                          '''
             cursor.execute(BOQ_list)
             insert_BOQ_list = '''
-                      INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1);
+                      INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1),(NULL ,'ก่อปูน',18.00,'ตร.ม',400.00,7200.00,100.00,1800.00,9000.00, 1);
                       '''
             cursor.execute(insert_BOQ_list)
             builder.commit()
