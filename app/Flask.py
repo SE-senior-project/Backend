@@ -97,12 +97,6 @@ class FlaskController:
     def Get_all_material():
         return jsonify(ProjectManagement.get_all_material())
 
-    # @staticmethod
-    # @app.route("/All_Project_Materials", methods=["POST"])
-    # def Get_all_project_material():
-    #     project_id = request.json['project_id']
-    #     return jsonify(ProjectManagement.get_all_project_material(project_id))
-
     @staticmethod
     @app.route("/Add_Material", methods=["POST"])
     def Add_material():
@@ -110,6 +104,9 @@ class FlaskController:
         material_price = request.json['material_price']
         project_material_total = request.json['project_material_total']
         project_id = request.json['project_id']
+        print(
+            "material_name: " + str(material_name) + " material_price: " + str(material_price) + " project_material_total: " + str(project_material_total) + " project_id: " + str(
+                project_id))
         return jsonify(
             ProjectManagement.add_material(material_name, material_price, project_material_total, project_id))
 
@@ -173,7 +170,7 @@ class FlaskController:
 
     @staticmethod
     @app.route("/Add_Project", methods=["POST"])
-    def add_project():
+    def Add_project():
         project_name = request.json['project_name']
         customer_name = request.json['customer_name']
         project_description = request.json['project_description']
@@ -223,7 +220,9 @@ class FlaskController:
         unit = request.json['unit']
         cost_of_materials_per_unit = request.json['cost_of_materials_per_unit']
         cost_of_wage_per_unit = request.json['cost_of_wage_per_unit']
-
+        print(
+            "BOQ id " + str(BOQ_id) + " รายการ " + str(list_name) + " พื้นที่ " + str(total_quantity) + " หน่วย " + str(
+                unit) + " วัสดุ " + str(cost_of_materials_per_unit) + " ค่าแรง " + str(cost_of_wage_per_unit))
         total_quantity = float(total_quantity)
         cost_of_materials_per_unit = float(cost_of_materials_per_unit)
         cost_of_wage_per_unit = float(cost_of_wage_per_unit)
