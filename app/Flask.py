@@ -193,8 +193,10 @@ class FlaskController:
     # waiting for doing.
     @staticmethod
     @app.route("/All_BOQ_List", methods=["GET"])
-    def Get_all_BOQ_list():
-        return jsonify(BOQ.get_all_BOQ_list(1))
+    def Get_BOQ_list():
+        # BOQ_id = request.json['BOQ_id']
+        BOQ_id = 1
+        return jsonify(BOQ.get_BOQ_list(BOQ_id))
 
     @staticmethod
     @app.route("/Update_BOQ_List", methods=["POST"])

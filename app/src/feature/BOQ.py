@@ -5,7 +5,7 @@ import json
 
 class BOQ(object):
     @staticmethod
-    def get_all_BOQ_list(BOQ_id):
+    def get_BOQ_list(BOQ_id):
         # BOQ_id = 1
         cursor = builder.cursor()
         sql_BOQ_list = '''
