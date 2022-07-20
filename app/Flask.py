@@ -214,6 +214,29 @@ class FlaskController:
         return jsonify(BOQ.update_BOQ_list(list_name, BOQ_list_id, total_quantity, unit, cost_of_materials_per_unit,
                                            cost_of_wage_per_unit))
 
+    @staticmethod
+    @app.route("/Add_BOQ_List", methods=["POST"])
+    def Add_BOQ_list():
+        BOQ_id = request.json['BOQ_id']
+        list_name = request.json['list_name']
+        total_quantity = request.json['total_quantity']
+        unit = request.json['unit']
+        cost_of_materials_per_unit = request.json['cost_of_materials_per_unit']
+        cost_of_wage_per_unit = request.json['cost_of_wage_per_unit']
+
+        total_quantity = float(total_quantity)
+        cost_of_materials_per_unit = float(cost_of_materials_per_unit)
+        cost_of_wage_per_unit = float(cost_of_wage_per_unit)
+        return jsonify(BOQ.add_BOQ_list(list_name, BOQ_id, total_quantity, unit, cost_of_materials_per_unit,
+                                        cost_of_wage_per_unit))
+
+    @staticmethod
+    @app.route("/Remove_BOQ_List", methods=["POST"])
+    def Remove_BOQ_list():
+        BOQ_list_id = request.json['BOQ_list_id']
+        BOQ_list_id = int(BOQ_list_id)
+        return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
+
 
 # FlaskController.Build_all_table()
 
