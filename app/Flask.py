@@ -203,7 +203,16 @@ class FlaskController:
     def Update_BOQ_list():
         BOQ_list_id = request.json['BOQ_list_id']
         list_name = request.json['list_name']
-        return jsonify(BOQ.update_BOQ_list(list_name, BOQ_list_id))
+        total_quantity = request.json['total_quantity']
+        unit = request.json['unit']
+        cost_of_materials_per_unit = request.json['cost_of_materials_per_unit']
+        cost_of_wage_per_unit = request.json['cost_of_wage_per_unit']
+
+        total_quantity = float(total_quantity)
+        cost_of_materials_per_unit = float(cost_of_materials_per_unit)
+        cost_of_wage_per_unit = float(cost_of_wage_per_unit)
+        return jsonify(BOQ.update_BOQ_list(list_name, BOQ_list_id, total_quantity, unit, cost_of_materials_per_unit,
+                                           cost_of_wage_per_unit))
 
 
 # FlaskController.Build_all_table()
