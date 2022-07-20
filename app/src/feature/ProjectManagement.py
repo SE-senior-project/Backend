@@ -93,8 +93,6 @@ class ProjectManagement(object):
                 num = num + 1
                 num = np.int16(num).item()
                 project_material_id = np.int16(project_material_id).item()
-                print(type(num))
-                print(type(project_material_id))
                 cursor.execute(sql_update, (num, project_material_id))
                 builder.commit()
                 return {
@@ -171,6 +169,7 @@ class ProjectManagement(object):
             df = df.drop_duplicates(subset=['material_type'])
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
+            print(output)
             return output
         else:
             return {
