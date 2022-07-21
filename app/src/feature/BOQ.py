@@ -5,6 +5,25 @@ import json
 
 class BOQ(object):
     @staticmethod
+    def get_BOQ(contractor_id):
+        cursor = builder.cursor()
+        sql_BOQ_list = '''
+                                   SELECT *
+                                   FROM BOQs
+                                   WHERE contractor_id = %s
+                                '''
+        print('Contractor id:' + str(contractor_id))
+        cursor.execute(sql_BOQ_list, (contractor_id,))
+        result = cursor.fetchall()
+        print(result)
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['id', 'BOQ_name', 'contractor_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
     def get_BOQ_list(BOQ_id):
         cursor = builder.cursor()
         sql_BOQ_list = '''

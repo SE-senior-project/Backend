@@ -190,10 +190,18 @@ class FlaskController:
     # ###################### BOQ #########################
     # waiting for doing.
     @staticmethod
-    @app.route("/All_BOQ_List", methods=["GET"])
-    def Get_BOQ_list():
+    @app.route("/All_BOQ", methods=["GET"])
+    def Get_BOQ():
         # BOQ_id = request.json['BOQ_id']
-        BOQ_id = 1
+        contractor_id = 1
+        return jsonify(BOQ.get_BOQ(contractor_id))
+
+    @staticmethod
+    @app.route("/All_BOQ_List", methods=["POST"])
+    def Get_BOQ_list():
+        BOQ_id = request.json['BOQ_id']
+        print(BOQ_id)
+        # BOQ_id = 1
         return jsonify(BOQ.get_BOQ_list(BOQ_id))
 
     @staticmethod
