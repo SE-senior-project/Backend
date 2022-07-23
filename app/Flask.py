@@ -192,9 +192,9 @@ class FlaskController:
     @staticmethod
     @app.route("/All_BOQ", methods=["GET"])
     def Get_BOQ():
-        # BOQ_id = request.json['BOQ_id']
-        contractor_id = 1
-        return jsonify(BOQ.get_BOQ(contractor_id))
+        # project_id = request.json['project_id']
+        project_id = 1
+        return jsonify(BOQ.get_BOQ(project_id))
 
     @staticmethod
     @app.route("/All_BOQ_List", methods=["POST"])

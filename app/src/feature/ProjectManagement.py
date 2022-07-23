@@ -224,12 +224,12 @@ class ProjectManagement(object):
     @staticmethod
     def get_all_total_material_selection(project_id):
         cursor = builder.cursor()
-        sql_category = '''
+        sql = '''
                                SELECT *
                                FROM ProjectMaterials
                                WHERE ProjectMaterials.project_id = %s
                             '''
-        cursor.execute(sql_category, (project_id,))
+        cursor.execute(sql, (project_id,))
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,

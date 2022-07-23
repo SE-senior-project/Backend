@@ -421,11 +421,12 @@ class InitApp:
                      CREATE TABLE BOQs (
                      BOQ_id INT AUTO_INCREMENT PRIMARY KEY,
                      BOQ_name VARCHAR(255) NOT NULL,
-                     contractor_id INT, FOREIGN KEY (contractor_id) REFERENCES Contractors(contractor_id)ON DELETE  CASCADE ON UPDATE CASCADE)
+                     project_id INT, FOREIGN KEY (project_id) REFERENCES Projects(project_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                     )
                      '''
             cursor.execute(BOQ)
             insert_BOQ = '''
-                    INSERT INTO BOQs ( BOQ_id,BOQ_name,contractor_id) VALUES (NULL ,'BOQที่ 1', 1),(NULL ,'BOQที่ 2', 1),(NULL ,'BOQที่ 3', 1);
+                    INSERT INTO BOQs ( BOQ_id,BOQ_name,project_id) VALUES (NULL ,'BOQที่ 1', 1 ),(NULL ,'BOQที่ 2', 1),(NULL ,'BOQที่ 3', 1);
                     '''
             cursor.execute(insert_BOQ)
             builder.commit()

@@ -4,16 +4,36 @@ import json
 
 
 class BOQ(object):
+
     @staticmethod
-    def get_BOQ(contractor_id):
+    def get_trend_material(project_id):
+        cursor = builder.cursor()
+        sql_trend = '''
+                                     SELECT *
+                                     FROM ProjectMaterials
+                                     WHERE ProjectMaterials.project_id = %s
+                                  '''
+        cursor.execute(sql_trend, (project_id,))
+        result = cursor.fetchall()
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['project_material_id', 'project_material_name', 'project_material_price',
+                                   'project_material_total', 'project_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+
+    @staticmethod
+    def get_BOQ(project_id):
         cursor = builder.cursor()
         sql_BOQ_list = '''
                                    SELECT *
                                    FROM BOQs
-                                   WHERE contractor_id = %s
+                                   WHERE project_id = %s
                                 '''
-        print('Contractor id:' + str(contractor_id))
-        cursor.execute(sql_BOQ_list, (contractor_id,))
+        print('Contractor id:' + str(project_id))
+        cursor.execute(sql_BOQ_list, (project_id,))
         result = cursor.fetchall()
         print(result)
         builder.commit()
