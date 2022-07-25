@@ -246,7 +246,7 @@ class FlaskController:
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
 
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

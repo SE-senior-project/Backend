@@ -26,7 +26,7 @@ class Admin(object):
             except:
                 print('fail')
 
-            if check:
+            if check.status_code == 200:
                 df = pd.read_html(r)[0]
                 df.dropna(inplace=True)
                 df.drop(df.index[14:37], inplace=True)
