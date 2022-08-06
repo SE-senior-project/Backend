@@ -15,13 +15,32 @@ class BOQ(object):
                                    FROM BOQs
                                    WHERE project_id = %s
                                 '''
-        print('Contractor id:' + str(project_id))
+        print('Project id:' + str(project_id))
         cursor.execute(sql_BOQ_list, (project_id,))
         result = cursor.fetchall()
         print(result)
         builder.commit()
         df = pd.DataFrame(result,
-                          columns=['id', 'BOQ_name', 'contractor_id'])
+                          columns=['id', 'BOQ_name', 'project_id'])
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def get_customer_view(project_id):
+        cursor = builder.cursor()
+        sql_customer_view = '''
+                                     SELECT *
+                                     FROM CustomerViews
+                                     WHERE project_id = %s
+                                  '''
+        print('Project id:' + str(project_id))
+        cursor.execute(sql_customer_view, (project_id,))
+        result = cursor.fetchall()
+        print(result)
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['id', 'customer_view_name', 'project_id'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output

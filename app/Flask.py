@@ -197,6 +197,13 @@ class FlaskController:
         return jsonify(BOQ.get_BOQ(project_id))
 
     @staticmethod
+    @app.route("/All_Customer_View", methods=["GET"])
+    def Get_customer_view():
+        # project_id = request.json['project_id']
+        project_id = 1
+        return jsonify(BOQ.get_customer_view(project_id))
+
+    @staticmethod
     @app.route("/All_BOQ_List", methods=["POST"])
     def Get_BOQ_list():
         BOQ_id = request.json['BOQ_id']
@@ -246,7 +253,9 @@ class FlaskController:
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
 
 
-FlaskController.Build_all_table()
+
+#
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
