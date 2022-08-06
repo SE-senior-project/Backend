@@ -507,12 +507,10 @@ class InitApp:
             InitApp.build_table_admin()
             InitApp.build_table_contractor()
             InitApp.build_table_material()
-            InitApp.build_table_material_comparator()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
             InitApp.build_table_BOQ()
             InitApp.build_table_BOQ_list()
-            # InitApp.build_table_project()
             print('Complete build all tables')
         except:
             print('uncompleted build')
