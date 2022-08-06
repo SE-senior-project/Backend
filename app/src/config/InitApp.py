@@ -25,8 +25,8 @@ class InitApp:
             cursor.execute(delete_user)
             delete_material = '''DROP TABLE IF EXISTS Materials;'''
             cursor.execute(delete_material)
-            delete_material_comparators = '''DROP TABLE IF EXISTS MaterialComparators;'''
-            cursor.execute(delete_material_comparators)
+            # delete_material_comparators = '''DROP TABLE IF EXISTS MaterialComparators;'''
+            # cursor.execute(delete_material_comparators)
             builder.commit()
             print('Already drop all tables')
         except:
@@ -347,48 +347,6 @@ class InitApp:
         except:
             print('Create fail')
 
-    # MaterialComparator_Entity
-    @staticmethod
-    def build_table_material_comparator():
-        try:
-            cursor = builder.cursor()
-            material_comparator = '''
-                        CREATE TABLE MaterialComparators (
-                        material_comparator_id INT AUTO_INCREMENT PRIMARY KEY,
-                        material_comparator_name VARCHAR(255) ,
-                        material_comparator_price VARCHAR(255))
-                        '''
-            cursor.execute(material_comparator)
-            url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
-            payload = {
-                'DDMonth': '03',
-                'DDYear': '2565',
-                'DDProvince': '50',
-                'texttable': 'csi_price_north_web_avg',
-                'text_name': 'unit_code_N',
-                'B1': '%B5%A1%C5%A7'
-            }
-            r = requests.post(url, data=payload).content
-            df = pd.read_html(r)[0]
-            df.dropna(inplace=True)
-            df.drop(df.index[14:37], inplace=True)
-            df.drop(df.index[27:29], inplace=True)
-            df.drop(df.index[91:100], inplace=True)
-            material_name = df[1].to_numpy()
-            material_price = df[3].to_numpy()
-            n = len(material_price)
-            insert_material = '''
-                              INSERT INTO MaterialComparators (material_comparator_price,material_comparator_name) VALUES (%s,%s);
-                              '''
-            for i in range(1, n, 1):
-                val_name = str(material_name[i])
-                val_price = str(material_price[i])
-                cursor.execute(insert_material, (val_price,val_name ))
-            builder.commit()
-            print('Created MaterialComparators')
-        except:
-            print('Create fail')
-
     # ProjectMaterial_Entity
     @staticmethod
     def build_table_project_material():
@@ -498,6 +456,48 @@ class InitApp:
             print('Created BOQlist')
         except:
             print('Create fail')
+
+    # MaterialComparator_Entity
+    # @staticmethod
+    # def build_table_material_comparator():
+    #     try:
+    #         cursor = builder.cursor()
+    #         material_comparator = '''
+    #                     CREATE TABLE MaterialComparators (
+    #                     material_comparator_id INT AUTO_INCREMENT PRIMARY KEY,
+    #                     material_comparator_name VARCHAR(255) ,
+    #                     material_comparator_price VARCHAR(255))
+    #                     '''
+    #         cursor.execute(material_comparator)
+    #         url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
+    #         payload = {
+    #             'DDMonth': '03',
+    #             'DDYear': '2565',
+    #             'DDProvince': '50',
+    #             'texttable': 'csi_price_north_web_avg',
+    #             'text_name': 'unit_code_N',
+    #             'B1': '%B5%A1%C5%A7'
+    #         }
+    #         r = requests.post(url, data=payload).content
+    #         df = pd.read_html(r)[0]
+    #         df.dropna(inplace=True)
+    #         df.drop(df.index[14:37], inplace=True)
+    #         df.drop(df.index[27:29], inplace=True)
+    #         df.drop(df.index[91:100], inplace=True)
+    #         material_name = df[1].to_numpy()
+    #         material_price = df[3].to_numpy()
+    #         n = len(material_price)
+    #         insert_material = '''
+    #                           INSERT INTO MaterialComparators (material_comparator_price,material_comparator_name) VALUES (%s,%s);
+    #                           '''
+    #         for i in range(1, n, 1):
+    #             val_name = str(material_name[i])
+    #             val_price = str(material_price[i])
+    #             cursor.execute(insert_material, (val_price,val_name ))
+    #         builder.commit()
+    #         print('Created MaterialComparators')
+    #     except:
+    #         print('Create fail')
 
     @staticmethod
     def build_all_table():
