@@ -1,6 +1,8 @@
 from app.src.config.Service import *
 import pandas as pd
 import json
+
+
 # from datetime import datetime
 # import requests
 
@@ -61,7 +63,29 @@ class BOQ(object):
         df = pd.DataFrame(result,
                           columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
                                    'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'BOQ_id','customer_view_id'])
+                                   'BOQ_id', 'customer_view_id'])
+
+        json_result = df.to_json(orient="records")
+        output = json.loads(json_result)
+        return output
+
+    @staticmethod
+    def get_show_template(customer_id):
+        cursor = builder.cursor()
+        sql_BOQ_list = '''
+                                    SELECT *
+                                    FROM BOQLists
+                                    WHERE BOQLists.customer_view_id = %s
+                                 '''
+        print('BOQ id:' + str(customer_id))
+        cursor.execute(sql_BOQ_list, (customer_id,))
+        result = cursor.fetchall()
+        print(result)
+        builder.commit()
+        df = pd.DataFrame(result,
+                          columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
+                                   'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
+                                   'BOQ_id', 'customer_view_id'])
 
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
@@ -260,7 +284,6 @@ class BOQ(object):
     #         return {
     #             'message': 'fetching trend fail'
     #         }
-
 
 # first = [100.055, 200.00, 300.00]
 # sec = [50.01, 300.05, 300.00]
