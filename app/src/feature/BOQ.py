@@ -23,70 +23,49 @@ class BOQ(object):
         print(result)
         builder.commit()
         df = pd.DataFrame(result,
-                          columns=['id', 'BOQ_name', 'project_id'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
-
-    @staticmethod
-    def get_customer_view(project_id):
-        cursor = builder.cursor()
-        sql_customer_view = '''
-                                     SELECT *
-                                     FROM CustomerViews
-                                     WHERE project_id = %s
-                                  '''
-        print('Project id:' + str(project_id))
-        cursor.execute(sql_customer_view, (project_id,))
-        result = cursor.fetchall()
-        print(result)
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['id', 'customer_view_name', 'project_id'])
+                          columns=['id', 'BOQ_name', 'status', 'project_id'])
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
         return output
 
     @staticmethod
     def get_BOQ_list(BOQ_id):
+        BOQ_id = 1
         cursor = builder.cursor()
         sql_BOQ_list = '''
-                                 SELECT *
+                                 SELECT 
+                                    BOQLists.BOQ_list_id, 
+                        BOQLists.list_name, 
+                        BOQLists.total_quantity, 
+                        BOQLists.unit, 
+                        BOQLists.cost_of_materials_per_unit, 
+                        BOQLists.total_cost_materials, 
+                        BOQLists.cost_of_wage_per_unit, 
+                        BOQLists.total_wages, 
+                        BOQLists.total_price, 
+                        BOQLists.BOQ_id, 
+                        BOQs.BOQ_name
                                  FROM BOQLists
+                                 INNER JOIN BOQs on BOQLists.BOQ_id = BOQs.BOQ_id
                                  WHERE BOQLists.BOQ_id = %s
                               '''
         print('BOQ id:' + str(BOQ_id))
         cursor.execute(sql_BOQ_list, (BOQ_id,))
         result = cursor.fetchall()
         print(result)
+        sql_last_id = '''
+        SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
+                                      '''
+        cursor.execute(sql_last_id)
+        last_id = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
                           columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
                                    'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'BOQ_id'])
+                                   'BOQ_id', 'BOQ_name'])
 
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
-
-    @staticmethod
-    def get_show_template(customer_id):
-        cursor = builder.cursor()
-        sql_BOQ_list = '''
-                                    SELECT *
-                                    FROM CustomerBOQLists
-                                    WHERE customer_view_id = %s
-                                 '''
-        print('BOQ id:' + str(customer_id))
-        cursor.execute(sql_BOQ_list, (customer_id,))
-        result = cursor.fetchall()
-        print(result)
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['customer_BOQ_list_id', 'list_name', 'total_quantity', 'unit',
-                                   'cost_of_materials_per_unit',
-                                   'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'customer_view_id'])
+        last_id = last_id[0]
+        df['BOQ_id_last_id'] = pd.Series(last_id)
 
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
