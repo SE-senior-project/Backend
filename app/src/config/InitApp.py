@@ -13,6 +13,8 @@ class InitApp:
             cursor.execute(delete_BOQ_list)
             delete_BOQ = '''DROP TABLE IF EXISTS BOQs;'''
             cursor.execute(delete_BOQ)
+            delete_customer_BOQ_list = '''DROP TABLE IF EXISTS CustomerBOQLists;'''
+            cursor.execute(delete_customer_BOQ_list)
             delete_customer_views = '''DROP TABLE IF EXISTS CustomerViews;'''
             cursor.execute(delete_customer_views)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
@@ -446,17 +448,45 @@ class InitApp:
                         BOQ_id INT, 
                          FOREIGN KEY (BOQ_id) REFERENCES BOQs(BOQ_id)
                          ON DELETE  CASCADE 
-                         ON UPDATE CASCADE,
-                        customer_view_id INT, FOREIGN KEY (customer_view_id) REFERENCES CustomerViews(customer_view_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                         ON UPDATE CASCADE
                         )
                          '''
             cursor.execute(BOQ_list)
             insert_BOQ_list = '''
-                      INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id,customer_view_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1,1),(NULL ,'ก่อปูน',18.00,'ตร.ม',400.00,7200.00,100.00,1800.00,9000.00, 1,1);
+                      INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1),(NULL ,'ก่อปูน',18.00,'ตร.ม',400.00,7200.00,100.00,1800.00,9000.00, 1);
                       '''
             cursor.execute(insert_BOQ_list)
             builder.commit()
-            print('Created BOQlist')
+            print('Created BOQ list')
+        except:
+            print('Create fail')
+
+    # CustomerBOQList_Entity
+    @staticmethod
+    def build_table_customer_BOQ_list():
+        try:
+            cursor = builder.cursor()
+            customer_BOQ_list = '''
+                         CREATE TABLE CustomerBOQLists (
+                         customer_BOQ_list_id INT AUTO_INCREMENT PRIMARY KEY,
+                         list_name VARCHAR(255) NOT NULL,
+                         total_quantity FLOAT,
+                         unit VARCHAR(255) NOT NULL,
+                         cost_of_materials_per_unit FLOAT,
+                         total_cost_materials FLOAT,
+                         cost_of_wage_per_unit FLOAT,
+                         total_wages FLOAT,
+                         total_price FLOAT,
+                         customer_view_id INT, FOREIGN KEY (customer_view_id) REFERENCES CustomerViews(customer_view_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                         )
+                          '''
+            cursor.execute(customer_BOQ_list)
+            insert_customer_BOQ_list = '''
+                       INSERT INTO CustomerBOQLists ( customer_BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,customer_view_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1),(NULL ,'ก่อปูน',18.00,'ตร.ม',400.00,7200.00,100.00,1800.00,9000.00, 1);
+                       '''
+            cursor.execute(insert_customer_BOQ_list)
+            builder.commit()
+            print('Created Customer BOQ list')
         except:
             print('Create fail')
 
@@ -536,6 +566,7 @@ class InitApp:
             InitApp.build_table_project_material()
             InitApp.build_table_BOQ()
             InitApp.build_table_customer_view()
+            InitApp.build_table_customer_BOQ_list()
             InitApp.build_table_BOQ_list()
             print('Complete build all tables')
         except:

@@ -63,7 +63,7 @@ class BOQ(object):
         df = pd.DataFrame(result,
                           columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
                                    'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'BOQ_id', 'customer_view_id'])
+                                   'BOQ_id'])
 
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
@@ -74,8 +74,8 @@ class BOQ(object):
         cursor = builder.cursor()
         sql_BOQ_list = '''
                                     SELECT *
-                                    FROM BOQLists
-                                    WHERE BOQLists.customer_view_id = %s
+                                    FROM CustomerBOQLists
+                                    WHERE customer_view_id = %s
                                  '''
         print('BOQ id:' + str(customer_id))
         cursor.execute(sql_BOQ_list, (customer_id,))
@@ -83,9 +83,10 @@ class BOQ(object):
         print(result)
         builder.commit()
         df = pd.DataFrame(result,
-                          columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
+                          columns=['customer_BOQ_list_id', 'list_name', 'total_quantity', 'unit',
+                                   'cost_of_materials_per_unit',
                                    'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'BOQ_id', 'customer_view_id'])
+                                   'customer_view_id'])
 
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
