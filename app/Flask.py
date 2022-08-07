@@ -197,11 +197,18 @@ class FlaskController:
         return jsonify(BOQ.get_BOQ(project_id))
 
     @staticmethod
-    @app.route("/All_BOQ_List", methods=["POST"])
-    def Get_BOQ_list():
+    @app.route("/Generate_BOQ", methods=["POST"])
+    def Generate_BOQ():
         BOQ_id = request.json['BOQ_id']
         # BOQ_id = 1
-        return jsonify(BOQ.get_BOQ_list(BOQ_id))
+        return jsonify(BOQ.generate_BOQ(BOQ_id))
+
+    @staticmethod
+    @app.route("/All_BOQ_List_Selection", methods=["POST"])
+    def Get_BOQ_list_selection():
+        BOQ_id = request.json['BOQ_id']
+        # BOQ_id = 1
+        return jsonify(BOQ.get_BOQ_list_selection(BOQ_id))
 
     @staticmethod
     @app.route("/Update_BOQ_List", methods=["POST"])
@@ -245,7 +252,7 @@ class FlaskController:
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
 
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
