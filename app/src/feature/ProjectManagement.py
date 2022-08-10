@@ -52,7 +52,7 @@ class ProjectManagement(object):
         cursor = builder.cursor()
         if type(material_name) != str or type(
                 material_price) != float or material_price < 0 or material_name == "" or type(
-                project_id) != int or type(project_material_total) != int or project_material_total < 1:
+            project_id) != int or type(project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
