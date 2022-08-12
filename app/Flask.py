@@ -13,6 +13,7 @@ from src.feature.Auth import *
 from src.feature.Admin import *
 from src.feature.ProjectManagement import *
 from src.feature.BOQ import *
+from src.feature.CheckList import *
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -197,11 +198,18 @@ class FlaskController:
         return jsonify(BOQ.get_BOQ(project_id))
 
     @staticmethod
-    @app.route("/All_BOQ_List", methods=["POST"])
-    def Get_BOQ_list():
+    @app.route("/Generate_BOQ", methods=["POST"])
+    def Generate_BOQ():
         BOQ_id = request.json['BOQ_id']
         # BOQ_id = 1
-        return jsonify(BOQ.get_BOQ_list(BOQ_id))
+        return jsonify(BOQ.generate_BOQ(BOQ_id))
+
+    @staticmethod
+    @app.route("/All_BOQ_List_Selection", methods=["POST"])
+    def Get_BOQ_list_selection():
+        BOQ_id = request.json['BOQ_id']
+        # BOQ_id = 1
+        return jsonify(BOQ.get_BOQ_list_selection(BOQ_id))
 
     @staticmethod
     @app.route("/Update_BOQ_List", methods=["POST"])
@@ -243,7 +251,7 @@ class FlaskController:
         BOQ_list_id = request.json['BOQ_list_id']
         BOQ_list_id = int(BOQ_list_id)
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
-
+        
     @staticmethod
     @app.route("/Update_BOQ_name", methods=["POST"])
     def Update_BOQ_name():
@@ -252,7 +260,34 @@ class FlaskController:
         return jsonify(BOQ.update_BOQ_name(BOQ_id, BOQ_name))
 
 
-# FlaskController.Build_all_table()
+    ####################### CheckList #########################
+
+    @staticmethod
+    @app.route("/Get_CheckList", methods=["GET"])
+    def Get_CheckList():
+        return jsonify(CheckList.get_checklist())
+
+    @staticmethod
+    @app.route("/Select_CheckList", methods=["POST"])
+    def Select_CheckList():
+        checklist_id = request.json['checklist_id']
+        project_id = request.json['project_id']
+        return jsonify(CheckList.select_checkList(checklist_id, project_id))
+
+    @staticmethod
+    @app.route("/Get_Select_CheckList", methods=["POST"])
+    def Get_Select_CheckList():
+        project_id = request.json['project_id']
+        return jsonify(CheckList.get_select_checkList(project_id))
+
+    @staticmethod
+    @app.route("/Get_Task", methods=["POST"])
+    def Get_Task():
+        checklist_id = request.json['checklist_id']
+        return jsonify(CheckList.get_task(checklist_id))
+
+
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

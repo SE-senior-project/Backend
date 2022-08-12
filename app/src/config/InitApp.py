@@ -9,10 +9,16 @@ class InitApp:
     def drop_table():
         try:
             cursor = builder.cursor()
+            delete_task = '''DROP TABLE IF EXISTS Tasks;'''
+            cursor.execute(delete_task)
+            delete_checklist = '''DROP TABLE IF EXISTS Checklists;'''
+            cursor.execute(delete_checklist)
             delete_BOQ_list = '''DROP TABLE IF EXISTS BOQLists;'''
             cursor.execute(delete_BOQ_list)
             delete_BOQ = '''DROP TABLE IF EXISTS BOQs;'''
             cursor.execute(delete_BOQ)
+            delete_project_checklist = '''DROP TABLE IF EXISTS ProjectCheckLists;'''
+            cursor.execute(delete_project_checklist)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
             cursor.execute(delete_project_material)
             delete_project = '''DROP TABLE IF EXISTS Projects;'''
@@ -458,47 +464,134 @@ class InitApp:
         except:
             print('Create fail')
 
-    # MaterialComparator_Entity
-    # @staticmethod
-    # def build_table_material_comparator():
-    #     try:
-    #         cursor = builder.cursor()
-    #         material_comparator = '''
-    #                     CREATE TABLE MaterialComparators (
-    #                     material_comparator_id INT AUTO_INCREMENT PRIMARY KEY,
-    #                     material_comparator_name VARCHAR(255) ,
-    #                     material_comparator_price VARCHAR(255))
-    #                     '''
-    #         cursor.execute(material_comparator)
-    #         url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
-    #         payload = {
-    #             'DDMonth': '03',
-    #             'DDYear': '2565',
-    #             'DDProvince': '50',
-    #             'texttable': 'csi_price_north_web_avg',
-    #             'text_name': 'unit_code_N',
-    #             'B1': '%B5%A1%C5%A7'
-    #         }
-    #         r = requests.post(url, data=payload).content
-    #         df = pd.read_html(r)[0]
-    #         df.dropna(inplace=True)
-    #         df.drop(df.index[14:37], inplace=True)
-    #         df.drop(df.index[27:29], inplace=True)
-    #         df.drop(df.index[91:100], inplace=True)
-    #         material_name = df[1].to_numpy()
-    #         material_price = df[3].to_numpy()
-    #         n = len(material_price)
-    #         insert_material = '''
-    #                           INSERT INTO MaterialComparators (material_comparator_price,material_comparator_name) VALUES (%s,%s);
-    #                           '''
-    #         for i in range(1, n, 1):
-    #             val_name = str(material_name[i])
-    #             val_price = str(material_price[i])
-    #             cursor.execute(insert_material, (val_price,val_name ))
-    #         builder.commit()
-    #         print('Created MaterialComparators')
-    #     except:
-    #         print('Create fail')
+    # CheckList_Entity
+    @staticmethod
+    def build_table_checklist():
+        try:
+            cursor = builder.cursor()
+            checklist = '''
+                       CREATE TABLE Checklists (
+                       checklist_id INT AUTO_INCREMENT PRIMARY KEY,
+                       checklist_name VARCHAR(255) NOT NULL)
+                       '''
+            cursor.execute(checklist)
+            insert_checklist = '''
+                      INSERT INTO `Checklists` ( `checklist_id`,`checklist_name`) 
+                      VALUES (NULL ,'พื้นที่นอกตัวบ้าน'),
+                      (NULL ,'โครงสร้าง'),
+                      (NULL ,'หลังคา'),
+                      (NULL ,'พื้น'),(NULL ,'ผนัง'),(NULL ,'ฝ้าเพดาน'),(NULL ,'ช่องเปิด'),(NULL ,'ไฟฟ้า'),(NULL ,'สุขาภิบาล');
+                      '''
+            cursor.execute(insert_checklist)
+            builder.commit()
+            print('Created Checklist')
+        except:
+            print('Create fail')
+        # Project_Entity
+
+    # Task_Entity
+    @staticmethod
+    def build_table_task():
+        try:
+            cursor = builder.cursor()
+            task = '''
+                           CREATE TABLE Tasks (
+                           task_id INT AUTO_INCREMENT PRIMARY KEY,
+                           task_name VARCHAR(255) NOT NULL,
+                           task_description VARCHAR(5000) NOT NULL,
+                           checklist_id INT, FOREIGN KEY (checklist_id) REFERENCES Checklists(checklist_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                     )
+                           '''
+            cursor.execute(task)
+            insert_task = '''
+                          INSERT INTO `Tasks`( `task_id`,`task_name`,`task_description`,`checklist_id`) 
+                          VALUES (NULL ,'ประตูรั้ว','หากเป็นบานพับจะต้องเปิดปิดได้สะดวกไม่ฝืดเคือง ถ้าเป็นเเบบเลื่อนเปิดค้างไว้ตรงไหนจะต้องหยุดอยู่ตรงนั้น ไม่เลื่อนไหลเอง งานสีต้องทาเรียบร้อยครบทั้งบาน ไม่มีส่วนที่เห็นเนื้อวัสดุหรือขึ้นสนิม กลอนประตูสามารถใช้การได้ดี',1)
+                          ,(NULL ,'รั้ว','รั้วจะต้องไม่เอียง ไม่ล้ม ไม่มีรอยแตกร้าว สีหรือวัสดุพื้นผิวจะต้องเรียบร้อยสวยงาม ไม่มีคราบความสกปรกจากการก่อสร้าง',1)
+                          ,(NULL ,'ดินถมรอบบ้าน','ดินที่ถมต้องถมเต็มพื้นที่ ปรับระดับของดินบริเวณรอบบ้านให้เรียบหรือเป็นเนินอย่างสวยงาม ไม่มีเศษวัสดุก่อสร้างหรือคราบปูนหลงเหลือ',1)
+                          ,(NULL ,'หญ้าและต้นไม้','หากโครงการสัญญาว่าจะปลูกหญ้าและต้นไม้ในบริเวณบ้าน ควรสั่งให้ลงมือปลูกภายหลังจากการตรวจบ้านเมื่อใกล้เวลาที่เราจะเข้าอยู่ ส่วนการลงต้นไม้ต้องตรวจสอบให้ดีว่ามีการนำแผ่นพลาสติกหรือตาข่ายพลาสติกออกจากตุ้มดินหรือยัง',1)
+                          ,(NULL ,'การระบายน้ำรอบที่ดิน','ตรวจสอบว่าบ้านมีรางระบายน้ำหรือจุดสำหรับระบายน้ำอยู่รอบที่ดินในทิศทางที่จะไม่ไหลย้อนกลับเข้าตัวบ้าน ท่อระบายน้ำจะต้องมีบ่อพักและฝาเปิดเพื่อการซ่อมบำรุงทุกระยะ 12 เมตร หากสามารถไปตรวจสอบทันทีหลังฝนหยุดตกจะทำให้เห็นทิศทางการระบายน้ำได้ดี',1)
+                          ,(NULL ,'ที่จอดรถ','ตรวจสอบความลาดเอียงของพื้นให้อยู่ในองศาที่พอเหมาะเพื่อป้องกันน้ำขังจากฝนสาดหรือน้ำล้างรถ พื้นผิวต้องเรียบเสมอไม่มีผิวขรุขระ ก่อสร้างด้วยปูนซีเมนต์เพื่อความเเข็งแรงรองรับน้ำหนักของรถ',1) 
+                          ,(NULL ,'ผนังภายนอก','ตรวจสอบรอยแตกร้าวทั้งจากการฉาบปูนและทาสี สีจะต้องเรียบเนียนสม่ำเสมอ หากเป็นวัสดุบุผนังอื่นๆ จะต้องไม่แตกบิ่นหรือบวม',1)
+                          ,(NULL ,'ระเบียงหรือเฉลียงนอกบ้าน','วัสดุปูพื้นเรียบร้อยสวยงาม ไม่ลื่นเวลาเปียกน้ำ และน้ำจะต้องไหลออกนอกตัวบ้านเสมอ',1)
+                          
+                          ,(NULL ,'เสาและคานส่วนของโครงสร้างเหล็ก','ไม่มีรอยแตกร้าว ไม่มีรอยแยกระหว่างเสากับผนัง รูปแบบของเสาไม่แอ่นหรือโค้ง',2)
+                          ,(NULL ,'พื้น','พื้นเรียบสม่ำเสมอ ไม่แอ่นหรือป่องขึ้นมา',2)
+                          ,(NULL ,'เสาเอ็นและทับหลังรอบวงกบประตูหน้าต่าง','ไม่มีรอยแตกร้าวที่มุมวงกบประตูและหน้าต่าง',2)
+                          ,(NULL ,'โครงสร้างเหล็กรับหลังคา','ต้องมีการทาสีเคลือบกันสนิมทั่วบริเวณ การเชื่อมต่อของโครงเหล็กจะต้องมั่นคงแข็งแรง ระยะห่างระหว่างระแนงรับกระเบื้องต้องเท่ากันสม่ำเสมอ',2)
+                          ,(NULL ,'โครงสร้างไม้ฝ้าเพดาน','เนื้อไม้ต้องมีการเคลือบน้ำยาป้องกันปลวกทั่วทุกด้าน ไม่มีรอยผุหรือกัดแทะของแมลง',2)
+                          ,(NULL ,'ฝ้า','ตรวจสอบรอยร้าวของฝ้าและความเรียบของฝ้า',2)
+                          
+                          ,(NULL ,'ชายคา','กระเบื้องทุกแผ่นติดตั้งอย่างแข็งแรง รอยต่อของวัสดุทำชายคาเชื่อมต่ออย่างเรียบร้อย ขอบชายคาได้แนวตรงทุกด้าน',3),
+                          (NULL ,'ฝ้าเพดานใต้ชายคา','ใช้วัสดุที่กันน้ำได้ ไม่มีคราบน้ำรั่วซึม ติดตั้งเรียบร้อย ทาสีเรียบเนียนสม่ำเสมอ',3)
+                          ,(NULL ,'ช่องระบายอากาศ','เรียบร้อยไม่คดงอ หากมีการเจาะรู ขนาดรูต้องเท่ากันสม่ำเสมอ ควรมีการติดตั้งมุ้งลวดใต้หลังคาเพื่อกันแมลงและสัตว์เล็ก',3)
+                          ,(NULL ,'กระเบื้องหลังคา','ติดตั้งสวยงามได้แนวตรง ผูกลวดยึดเกาะกันอย่างแข็งแรง สีกระเบื้องสม่ำเสมอตรงตามที่กำหนด',3)
+                          ,(NULL ,'การรั่วซึมของหลังคา','ฝ้าใต้หลังคาต้องไม่มีคราบน้ำรั่วซึม กระเบื้องปูหลังคาแต่ละเเผ่นต้องแนบสนิท มองจากภายในบ้านแล้วไม่เห็นรูแสงผ่านเข้ามา',3)
+                          
+                          ,(NULL ,'พื้นผิวในตัวบ้าน','เรียบเนียนสม่ำเสมอ เดินไม่สดุด ไม่นูน โก่งตัว หรือยุบเป็นโพรงใต้กระเบื้อง หากไม่ใช่ส่วนระบายน้ำต้องไม่เป็นแอ่ง',4)
+                          ,(NULL ,'พื้นผิวส่วนเปียก','พื้นห้องน้ำ ลานจอดรถ ลานซักล้าง เฉลียงภายนอก ต้องมีความลาดเอียงพอเหมาะกับการระบายน้ำ และต้องไม่มีน้ำขังเป็นแอ่ง',4)
+                          ,(NULL ,'บันได','ลูกนอนและลูกตั้งของบันไดต้องเท่ากันทุกขั้น แต่ละขั้นต้องได้ฉากและได้แนว เวลาเดินขึ้นลงต้องไม่ส่งเสียงดัง วัสดุเคลือบผิวเรียบร้อย ติดตั้งราวกันตกอย่างเเข้งแรง',4)
+                          ,(NULL ,'การปูพื้นหรือติดตั้งวัสดุบุผิว','พื้นไม้ พื้นลามิเนต หินอ่อน หินแกรนิต กระเบื้องเซรามิค รวมถึงพรม รอยต่อต้องสนิทดี เรียบเนียนเสมอกัน ไม่มีคราบน้ำหรือความชื้นจากภายใจ ยาแนวที่ใช้ต้องผสมสารกันซึมและเชื้อรา สีสม่ำเสมอถูกต้องตามแบบ ไม่มีคราบสกปรก',4)
+                          
+                          ,(NULL ,'ระดับผิวหน้าผนัง','ต้องได้ดิ่งและได้ฉาก ผิวปูนฉาบหนังต้องเรียบสม่ำเสมอ ไม่มีสวนที่ปูดออกหรือยุบเป็นหลุม ไม่มีรอบแตกร้าว ทาสีเรียบสม่ำเสมอ',5)                          
+                          ,(NULL ,'รอยต่อระหว่างพื้น ผนัง เพดาน','ต้องแนบสนิท ไม่มีรอยแตกระหว่างผนังกับพื้นและเพดาน',5)
+                          ,(NULL ,'วัสดุบุผนัง','วิธีสังเกตเหมือนกับวัสดุปูพื้น คือเรียบเนียบเสมอกัน สีสม่ำเสมอถูกต้องตามแบบ ส่วนที่เพิ่มขึ้นมาคือบัวพื้น บัวเชิงผนัง และบัวฝ้าเพดาน ต้องติดตั้งแนบสนิบไม่โก่งหรือคดงอ ได้ระดับเท่ากันทั้งห้อง',5)
+                          
+                          ,(NULL ,'ระดับของฝ้า','ได้รับดับเท่ากันทั้งห้อง ไม่ตกท้องช้างหรือเว้าขึ้นบน ขอบฝ้าอยู่ในระดับตรง ควรมีช่องเซอร์วิสสำหรับเปิดขึ้นไปตรวจสอบใต้หลังคา',6)
+                          ,(NULL ,'การเชื่อมต่อฝ้า','หากเป็นฝ้ายิบซั่มบอร์ดฉาบเรียบต้องไม่เห็นรอยต่อ ส่วนฝ้าทีบาร์เส้นทีบาร์ต้องตรงได้ระดับไม่คดงอ แผ่นฝ้าที่ใส่ช่องทีบาร์ต้องเป็นมุมฉากทั้งหมด ขณะที่ฝ้าแผ่นกระเบื้องซีเมนต์ รอยต่อต้องมีขนาดสม่ำเสมอและเป็นเส้นตรง',6)
+                          ,(NULL ,'สีฟ้าเพดาน','สีต้องเรียบเนียบสวยงาม ไม่มีคราบสกปรก',6)
+                          
+                          ,(NULL ,'กรอบของช่องเปิด','กรอบของทุกช่องเปิดต้องได้แนวและระดับ มีการทำทับหลังและเสาเอ็น ช่องเปิดต้องได้ฉากและขนาดที่ถูกต้อง เปิดปิดได้สะดวก ไม่มีช่องว่างระหว่างบานกรอบกับวงกบ',7)
+                          ,(NULL ,'กระจก','ไม่มีรอยแตกร้าวหรือขีดข่วน กดดูแล้วไม่หลุดออกจากบานหรือโก่งจนเหมือนจะแตก รอยต่อระหว่างกระจกกับบานหรือวงกบต้องแนบสนิท',7)
+                          ,(NULL ,'อุปกรณ์ต่างๆ','ใช้งานได้ดี ลงกลอนได้สุดทุกตัว มือจับและลูกบิดติดตั้งแข็งแรง ไม่หลวมหลุดเมื่องออกแรงดึง',7)
+                          
+                          ,(NULL ,'ปลั๊กไฟฟ้า','ใช้งานได้ทุกจุด ฝาครอบไม่หมองคล้ำหรือมีรอยดำ ควรตรวจสอบด้วยไขควงวัดไฟ หรืออุปกรณ์ไฟฟ้า และอย่าลืมลองกดกลิ่งหน้าบ้านดูด้วยว่าใช้งานได้หรือไม่',8)
+                          ,(NULL ,'สวิทช์ไฟฟ้า','เปิดปิดได้อย่างสะดวก ควรลองเปิดปิดแรงๆ หลายครั้ง และฝาครอบต้องไม่หมองคล้ำหรือมีรอยดำ',8)
+                          ,(NULL ,'ไฟแสงสว่าง','หลอดไฟฟ้าทุกดวงทั้งในและนอกบ้านต้องเปิดได้ทุกดวง ไม่มีคราบดำ',8)
+                          ,(NULL ,'การเดินสายไฟฟ้า','ต้องเดินเรียบร้อยสวยงาม แบบลอยต้องมีการตีกิ๊บเรียบร้อย ส่วนการเดินลอยบริเวณมุมต้องเข้ามุมสวยงาม ไม่มีบริเวณใดของสายที่เป้นรอยคล้ำหรือดำ',8)
+                          ,(NULL ,'อุปกรณ์ไฟฟ้าอื่นๆ','ตามปกติโครงการบ้านจะแถมเครื่องใช้ไฟฟ้าพื้นฐานอย่าง เครื่องปรับอากาศ พัดลมดูดอากาศ เครื่องดูดควัน เตาไฟฟ้า เครื่องทำน้ำอุ่น ฯลฯ ควรทดลองเปิดอุปกรณ์ทั้งหมดพร้อมๆ กันเพื่อตรวจดูการใช้ไฟว่าปกติดีหรือไม่ และต้องขอใบรับประกันของอุปกรณ์ทุกชิ้นเก็บไว้ด้วย',8)
+                          ,(NULL ,'สายดิน','ต้องมีการเดินสายดินไว้อย่างเรียบร้อยทุกปลั๊กไฟฟ้า และต้องสอบถามที่ฝังแท่งเหล็กของสายดินให้ทราบชัดเจนว่าอยู๋ตรงไหน',8)
+                          
+                          ,(NULL ,'การติดตั้งสุขภัณฑ์และอุปกรณ์','ติดตั้งในตำแหน่งที่ถูกต้อง ได้ระนาบและได้ฉาก มั่นคงแข็งแรง ผิวสุขภัณฑ์เรียบเนียนไม่มีรอยด่างหรือคราบสกปรก',9)
+                          ,(NULL ,'ก๊อกน้ำ','ใช้งานได้ดี เปิดปิดไม่ติดขัดหรือหลวม น้ำไหลโดยสะดวกไม่เบาผิดปกติ เมื่อปิดก๊อกแล้วต้องไม่มีน้ำหยดซึม',9)
+                          ,(NULL ,'อ่างล้างหน้าและอ่างอาบน้ำ',' ติดตั้งในตำแหน่งและระดับความสูงที่ถูกต้อง ช่องน้ำล้นและสะดือระบายน้ำได้ดี พื้นผิวเรียบเนียน สะอาดไม่มีคราบสกปรก',9)
+                          ,(NULL ,'จุดระบายน้ำที่พื้น','สามารถระบายน้ำได้เป็นอย่างดีในเวลาที่รวดเร็ว โดยที่ระบายน้ำควรมีถ้วยดักกลิ่นหรือติดตั้งระบบดักกลิ่นด้วยท่อข้องอขังน้ำกันกลิ่น',9)
+                          ,(NULL ,'ระบบท่อ','ต้องไม่มีรอยรั่วของน้ำทุกจุดของท่อและข้อต่อ เมื่อปิดระบบน้ำทั้งหมดแล้วมิเตอร์ต้องไม่เดิน',9)
+                          ,(NULL ,'โถส้วม','กดน้ำแล้วสามารถชำระสิ่งปฏิกูลได้เป็นอย่างดี ยาแนวที่ฐานเรียบร้อยไม่มีฟองอากาศเกิดขึ้นเมื่อใช้งาน และไม่มีฟองอากาศผุดขึ้นในโฐเมื่อมีการใช้งานโถส้วมห้องน้ำห้องอื่น',9)
+                          
+                          ;
+                          '''
+            cursor.execute(insert_task)
+            builder.commit()
+            print('Created Task')
+        except:
+            print('Create fail')
+        # Project_Entity
+
+    # Project_CheckList_Entity
+    @staticmethod
+    def build_table_project_checklist():
+        try:
+            cursor = builder.cursor()
+            project_checklist = '''
+                           CREATE TABLE ProjectCheckLists (
+                            project_checklist_id INT AUTO_INCREMENT PRIMARY KEY,
+                            checklist_id INT NOT NULL,  
+                            project_id INT, 
+                            FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+                            ON DELETE  CASCADE 
+                            ON UPDATE CASCADE)
+                           '''
+            cursor.execute(project_checklist)
+            insert_project_checklist = '''
+                          INSERT INTO `ProjectCheckLists` ( project_checklist_id,checklist_id,project_id) 
+                          VALUES
+                          (NULL ,2,1);
+                          '''
+            cursor.execute(insert_project_checklist)
+            builder.commit()
+            print('Created ProjectChecklist')
+        except:
+            print('Create fail')
 
     @staticmethod
     def build_all_table():
@@ -510,8 +603,11 @@ class InitApp:
             InitApp.build_table_material()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
+            InitApp.build_table_project_checklist()
             InitApp.build_table_BOQ()
             InitApp.build_table_BOQ_list()
+            InitApp.build_table_checklist()
+            InitApp.build_table_task()
             print('Complete build all tables')
         except:
             print('uncompleted build')

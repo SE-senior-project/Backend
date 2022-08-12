@@ -29,11 +29,66 @@ class BOQ(object):
         return output
 
     @staticmethod
-    def get_BOQ_list(BOQ_id):
+    def generate_BOQ(BOQ_id):
         cursor = builder.cursor()
         sql_BOQ_list = '''
-                                 SELECT 
-                                    BOQLists.BOQ_list_id, 
+                            SELECT  * FROM BOQLists WHERE BOQLists.BOQ_id = %s
+                                  '''
+        print('generate BOQ id:' + str(BOQ_id))
+        cursor.execute(sql_BOQ_list, (BOQ_id,))
+        result = cursor.fetchall()
+        sql_last_id = '''
+                     SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
+                                                   '''
+        cursor.execute(sql_last_id)
+        last_id = cursor.fetchall()
+        last_id = pd.DataFrame(last_id, columns=['last_id'])
+        last_id = int(last_id['last_id'])
+        last_id = last_id + 1
+
+        if len(result) > 0:
+            df = pd.DataFrame(result,
+                              columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
+                                       'cost_of_materials_per_unit',
+                                       'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
+                                       'BOQ_id'])
+
+            BOQ_name = "BOQ " + str(last_id)
+            insert_BOQ = '''
+                         INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
+                         VALUES (%s ,%s,%s,%s);
+                                                              '''
+            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, 1))
+            insert_BOQ_list = '''
+                  INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) 
+                  VALUES (NULL ,%s,%s,%s,%s,%s,%s,%s,%s,%s);
+                                                       '''
+            for i in df.iloc:
+                list_name = str(i['list_name'])
+                total_quantity = float(i['total_quantity'])
+                unit = str(i['unit'])
+                cost_of_materials_per_unit = float(i['cost_of_materials_per_unit'])
+                total_cost_materials = float(i['total_cost_materials'])
+                cost_of_wage_per_unit = float(i['cost_of_wage_per_unit'])
+                total_wages = float(i['total_wages'])
+                total_price = float(i['total_price'])
+                cursor.execute(insert_BOQ_list, (
+                    list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
+                    cost_of_wage_per_unit,
+                    total_wages, total_price, last_id))
+
+        builder.commit()
+
+        return {
+            'last_id': last_id
+        }
+
+    @staticmethod
+    def get_BOQ_list_selection(BOQ_id):
+        cursor = builder.cursor()
+        sql_BOQ_list = '''
+                        SELECT 
+                        BOQLists.BOQ_list_id, 
                         BOQLists.list_name, 
                         BOQLists.total_quantity, 
                         BOQLists.unit, 
@@ -52,19 +107,19 @@ class BOQ(object):
         cursor.execute(sql_BOQ_list, (BOQ_id,))
         result = cursor.fetchall()
         print(result)
-        sql_last_id = '''
-        SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
-                                      '''
-        cursor.execute(sql_last_id)
-        last_id = cursor.fetchall()
+        # sql_last_id = '''
+        # SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
+        #                               '''
+        # cursor.execute(sql_last_id)
+        # last_id = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,
                           columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
                                    'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
                                    'BOQ_id', 'BOQ_name'])
 
-        last_id = last_id[0]
-        df['BOQ_id_last_id'] = pd.Series(last_id)
+        # last_id = last_id[0]
+        # df['BOQ_id_last_id'] = pd.Series(last_id)
 
         json_result = df.to_json(orient="records")
         output = json.loads(json_result)
