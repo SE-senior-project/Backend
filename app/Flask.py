@@ -259,6 +259,12 @@ class FlaskController:
         BOQ_name = request.json['BOQ_name']
         return jsonify(BOQ.update_BOQ_name(BOQ_id, BOQ_name))
 
+    @staticmethod
+    @app.route("/Update_BOQ_status", methods=["POST"])
+    def Update_BOQ_status():
+        BOQ_id = request.json['BOQ_id']
+        return jsonify(BOQ.update_BOQ_status(BOQ_id))
+
 
     ####################### CheckList #########################
 
@@ -287,7 +293,7 @@ class FlaskController:
         return jsonify(CheckList.get_task(checklist_id))
 
 
-FlaskController.Build_all_table()
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
