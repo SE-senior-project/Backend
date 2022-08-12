@@ -244,6 +244,13 @@ class FlaskController:
         BOQ_list_id = int(BOQ_list_id)
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
 
+    @staticmethod
+    @app.route("/Update_BOQ_name", methods=["POST"])
+    def Update_BOQ_name():
+        BOQ_id = request.json['BOQ_id']
+        BOQ_name = request.json['BOQ_name']
+        return jsonify(BOQ.update_BOQ_name(BOQ_id, BOQ_name))
+
 
 # FlaskController.Build_all_table()
 
