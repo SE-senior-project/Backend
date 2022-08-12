@@ -9,6 +9,10 @@ class InitApp:
     def drop_table():
         try:
             cursor = builder.cursor()
+            delete_BOQ_list = '''DROP TABLE IF EXISTS BOQLists;'''
+            cursor.execute(delete_BOQ_list)
+            delete_BOQ = '''DROP TABLE IF EXISTS BOQs;'''
+            cursor.execute(delete_BOQ)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
             cursor.execute(delete_project_material)
             delete_project = '''DROP TABLE IF EXISTS Projects;'''
@@ -21,6 +25,8 @@ class InitApp:
             cursor.execute(delete_user)
             delete_material = '''DROP TABLE IF EXISTS Materials;'''
             cursor.execute(delete_material)
+            # delete_material_comparators = '''DROP TABLE IF EXISTS MaterialComparators;'''
+            # cursor.execute(delete_material_comparators)
             builder.commit()
             print('Already drop all tables')
         except:
@@ -150,17 +156,6 @@ class InitApp:
             df.drop(df.index[14:37], inplace=True)
             df.drop(df.index[27:29], inplace=True)
             df.drop(df.index[91:100], inplace=True)
-            # clean_data
-            # df[4] = df[1].str.find('ขนาด')
-            # select_size = df.loc[df[4] >= 1]
-            # index = select_size[0]
-            # data = select_size[1]
-            # size = []
-            # pattern = ".*" + 'ขนาด'
-            # for i in data:
-            #     word = str(i)
-            #     strValue = re.sub(pattern, '', word)
-            #     size.append(strValue)
             material_name = df[1].to_numpy()
             material_unit = df[2].to_numpy()
             material_price = df[3].to_numpy()
@@ -408,6 +403,103 @@ class InitApp:
             print('Create fail')
         # Project_Entity
 
+    # BOQ_Entity
+    @staticmethod
+    def build_table_BOQ():
+        try:
+            cursor = builder.cursor()
+            BOQ = '''
+                     CREATE TABLE BOQs (
+                     BOQ_id INT AUTO_INCREMENT PRIMARY KEY,
+                     BOQ_name VARCHAR(255) NOT NULL,
+                     status BIT NOT NULL,
+                     project_id INT, FOREIGN KEY (project_id) REFERENCES Projects(project_id)ON DELETE  CASCADE ON UPDATE CASCADE
+                     )
+                     '''
+            cursor.execute(BOQ)
+            insert_BOQ = '''
+                    INSERT INTO BOQs ( BOQ_id,BOQ_name,status,project_id) VALUES (NULL ,'BOQ 1', 1,1 ),(NULL ,'BOQ 2', 1,1),(NULL ,'BOQ 3', 1,1);
+                    '''
+            cursor.execute(insert_BOQ)
+            builder.commit()
+            print('Created BOQ')
+        except:
+            print('Create fail')
+
+    # BOQList_Entity
+    @staticmethod
+    def build_table_BOQ_list():
+        try:
+            cursor = builder.cursor()
+            BOQ_list = '''
+                        CREATE TABLE BOQLists (
+                        BOQ_list_id INT AUTO_INCREMENT PRIMARY KEY,
+                        list_name VARCHAR(255) NOT NULL,
+                        total_quantity FLOAT,
+                        unit VARCHAR(255) NOT NULL,
+                        cost_of_materials_per_unit FLOAT,
+                        total_cost_materials FLOAT,
+                        cost_of_wage_per_unit FLOAT,
+                        total_wages FLOAT,
+                        total_price FLOAT,
+                        BOQ_id INT, 
+                         FOREIGN KEY (BOQ_id) REFERENCES BOQs(BOQ_id)
+                         ON DELETE  CASCADE 
+                         ON UPDATE CASCADE
+                        )
+                         '''
+            cursor.execute(BOQ_list)
+            insert_BOQ_list = '''
+                      INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) VALUES (NULL ,'ทาสีผนัง',18.00,'ตร.ม',200.00,3600.00,100.00,1800.00,5400.00, 1),(NULL ,'ก่อปูน',18.00,'ตร.ม',400.00,7200.00,100.00,1800.00,9000.00, 1);
+                      '''
+            cursor.execute(insert_BOQ_list)
+            builder.commit()
+            print('Created BOQ list')
+        except:
+            print('Create fail')
+
+    # MaterialComparator_Entity
+    # @staticmethod
+    # def build_table_material_comparator():
+    #     try:
+    #         cursor = builder.cursor()
+    #         material_comparator = '''
+    #                     CREATE TABLE MaterialComparators (
+    #                     material_comparator_id INT AUTO_INCREMENT PRIMARY KEY,
+    #                     material_comparator_name VARCHAR(255) ,
+    #                     material_comparator_price VARCHAR(255))
+    #                     '''
+    #         cursor.execute(material_comparator)
+    #         url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
+    #         payload = {
+    #             'DDMonth': '03',
+    #             'DDYear': '2565',
+    #             'DDProvince': '50',
+    #             'texttable': 'csi_price_north_web_avg',
+    #             'text_name': 'unit_code_N',
+    #             'B1': '%B5%A1%C5%A7'
+    #         }
+    #         r = requests.post(url, data=payload).content
+    #         df = pd.read_html(r)[0]
+    #         df.dropna(inplace=True)
+    #         df.drop(df.index[14:37], inplace=True)
+    #         df.drop(df.index[27:29], inplace=True)
+    #         df.drop(df.index[91:100], inplace=True)
+    #         material_name = df[1].to_numpy()
+    #         material_price = df[3].to_numpy()
+    #         n = len(material_price)
+    #         insert_material = '''
+    #                           INSERT INTO MaterialComparators (material_comparator_price,material_comparator_name) VALUES (%s,%s);
+    #                           '''
+    #         for i in range(1, n, 1):
+    #             val_name = str(material_name[i])
+    #             val_price = str(material_price[i])
+    #             cursor.execute(insert_material, (val_price,val_name ))
+    #         builder.commit()
+    #         print('Created MaterialComparators')
+    #     except:
+    #         print('Create fail')
+
     @staticmethod
     def build_all_table():
         try:
@@ -418,7 +510,8 @@ class InitApp:
             InitApp.build_table_material()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
-            # InitApp.build_table_project()
+            InitApp.build_table_BOQ()
+            InitApp.build_table_BOQ_list()
             print('Complete build all tables')
         except:
             print('uncompleted build')

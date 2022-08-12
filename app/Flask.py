@@ -7,10 +7,12 @@
 # db = SQLAlchemy(app)
 
 from flask import Flask, request, jsonify
+
 from src.config.InitApp import *
 from src.feature.Auth import *
 from src.feature.Admin import *
 from src.feature.ProjectManagement import *
+from src.feature.BOQ import *
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -95,12 +97,6 @@ class FlaskController:
     def Get_all_material():
         return jsonify(ProjectManagement.get_all_material())
 
-    # @staticmethod
-    # @app.route("/All_Project_Materials", methods=["POST"])
-    # def Get_all_project_material():
-    #     project_id = request.json['project_id']
-    #     return jsonify(ProjectManagement.get_all_project_material(project_id))
-
     @staticmethod
     @app.route("/Add_Material", methods=["POST"])
     def Add_material():
@@ -108,6 +104,10 @@ class FlaskController:
         material_price = request.json['material_price']
         project_material_total = request.json['project_material_total']
         project_id = request.json['project_id']
+        print(
+            "material_name: " + str(material_name) + " material_price: " + str(
+                material_price) + " project_material_total: " + str(project_material_total) + " project_id: " + str(
+                project_id))
         return jsonify(
             ProjectManagement.add_material(material_name, material_price, project_material_total, project_id))
 
@@ -127,7 +127,7 @@ class FlaskController:
     @app.route("/All_Selection_Type", methods=["POST"])
     def Get_all_selection_type():
         material_category = request.json['material_category']
-        print(type(material_category))
+        print('ประเภทวัสดุ:' + str(material_category))
         return jsonify(ProjectManagement.get_all_selection_type(material_category))
 
     @staticmethod
@@ -171,7 +171,7 @@ class FlaskController:
 
     @staticmethod
     @app.route("/Add_Project", methods=["POST"])
-    def add_project():
+    def Add_project():
         project_name = request.json['project_name']
         customer_name = request.json['customer_name']
         project_description = request.json['project_description']
@@ -187,8 +187,72 @@ class FlaskController:
         material_name = request.json['material_name']
         return jsonify(ProjectManagement.search_result(material_name))
 
-FlaskController.Build_all_table()
+    # ###################### BOQ #########################
 
+    @staticmethod
+    @app.route("/All_BOQ", methods=["GET"])
+    def Get_BOQ():
+        # project_id = request.json['project_id']
+        project_id = 1
+        return jsonify(BOQ.get_BOQ(project_id))
+
+    @staticmethod
+    @app.route("/All_BOQ_List", methods=["POST"])
+    def Get_BOQ_list():
+        BOQ_id = request.json['BOQ_id']
+        # BOQ_id = 1
+        return jsonify(BOQ.get_BOQ_list(BOQ_id))
+
+    @staticmethod
+    @app.route("/Update_BOQ_List", methods=["POST"])
+    def Update_BOQ_list():
+        BOQ_list_id = request.json['BOQ_list_id']
+        list_name = request.json['list_name']
+        total_quantity = request.json['total_quantity']
+        unit = request.json['unit']
+        cost_of_materials_per_unit = request.json['cost_of_materials_per_unit']
+        cost_of_wage_per_unit = request.json['cost_of_wage_per_unit']
+
+        total_quantity = float(total_quantity)
+        cost_of_materials_per_unit = float(cost_of_materials_per_unit)
+        cost_of_wage_per_unit = float(cost_of_wage_per_unit)
+        return jsonify(BOQ.update_BOQ_list(list_name, BOQ_list_id, total_quantity, unit, cost_of_materials_per_unit,
+                                           cost_of_wage_per_unit))
+
+    @staticmethod
+    @app.route("/Add_BOQ_List", methods=["POST"])
+    def Add_BOQ_list():
+        BOQ_id = request.json['BOQ_id']
+        list_name = request.json['list_name']
+        total_quantity = request.json['total_quantity']
+        unit = request.json['unit']
+        cost_of_materials_per_unit = request.json['cost_of_materials_per_unit']
+        cost_of_wage_per_unit = request.json['cost_of_wage_per_unit']
+        print(
+            "BOQ id " + str(BOQ_id) + " รายการ " + str(list_name) + " พื้นที่ " + str(total_quantity) + " หน่วย " + str(
+                unit) + " วัสดุ " + str(cost_of_materials_per_unit) + " ค่าแรง " + str(cost_of_wage_per_unit))
+        total_quantity = float(total_quantity)
+        cost_of_materials_per_unit = float(cost_of_materials_per_unit)
+        cost_of_wage_per_unit = float(cost_of_wage_per_unit)
+        return jsonify(BOQ.add_BOQ_list(list_name, BOQ_id, total_quantity, unit, cost_of_materials_per_unit,
+                                        cost_of_wage_per_unit))
+
+    @staticmethod
+    @app.route("/Remove_BOQ_List", methods=["POST"])
+    def Remove_BOQ_list():
+        BOQ_list_id = request.json['BOQ_list_id']
+        BOQ_list_id = int(BOQ_list_id)
+        return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
+
+    @staticmethod
+    @app.route("/Update_BOQ_name", methods=["POST"])
+    def Update_BOQ_name():
+        BOQ_id = request.json['BOQ_id']
+        BOQ_name = request.json['BOQ_name']
+        return jsonify(BOQ.update_BOQ_name(BOQ_id, BOQ_name))
+
+
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

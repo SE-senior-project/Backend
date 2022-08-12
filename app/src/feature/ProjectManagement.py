@@ -1,5 +1,3 @@
-import numpy as np
-
 from app.src.config.Service import *
 import pandas as pd
 import json
@@ -11,8 +9,8 @@ class ProjectManagement(object):
     def add_project(project_name, customer_name, project_description, deadline, status, contractor_id):
         try:
             cursor = builder.cursor()
-            if type(project_name) != str or type(customer_name) != str or type(project_description) != str \
-                or type(status) != int or type(contractor_id) != int or contractor_id < 1 or status < 0 or status > 1:
+            if type(project_name) != str or type(customer_name) != str or type(project_description) != str or type(
+                    status) != int or type(contractor_id) != int or contractor_id < 1 or status < 0 or status > 1:
                 return {
                     "message": "invalid input"
                 }
@@ -49,36 +47,12 @@ class ProjectManagement(object):
         output = json.loads(json_result)
         return output
 
-    # @staticmethod
-    # def get_all_project_material(project_id):
-    #     if type(project_id) == int and project_id > 0:
-    #         cursor = builder.cursor()
-    #         sql_project_materials = '''
-    #                SELECT *
-    #                FROM ProjectMaterials
-    #                WHERE ProjectMaterials.project_id = %s
-    #             '''
-    #         cursor.execute(sql_project_materials, (project_id,))
-    #         result = cursor.fetchall()
-    #         builder.commit()
-    #         df = pd.DataFrame(result,
-    #                           columns=['project_material_id', 'project_material_name', 'project_material_price',
-    #                                    'project_material_total', 'project_id'])
-    #         json_result = df.to_json(orient="records")
-    #         output = json.loads(json_result)
-    #         return output
-    #     else:
-    #         return {
-    #             "message": "fetching project material unsuccessfully"
-    #         }
-
     @staticmethod
     def add_material(material_name, material_price, project_material_total, project_id):
         cursor = builder.cursor()
         if type(material_name) != str or type(
                 material_price) != float or material_price < 0 or material_name == "" or type(
-            project_id) != int or type(
-            project_material_total) != int or project_material_total < 1:
+                project_id) != int or type(project_material_total) != int or project_material_total < 1:
             return {
                 "message": "invalid input"
             }
@@ -119,8 +93,6 @@ class ProjectManagement(object):
                 num = num + 1
                 num = np.int16(num).item()
                 project_material_id = np.int16(project_material_id).item()
-                print(type(num))
-                print(type(project_material_id))
                 cursor.execute(sql_update, (num, project_material_id))
                 builder.commit()
                 return {
@@ -197,6 +169,7 @@ class ProjectManagement(object):
             df = df.drop_duplicates(subset=['material_type'])
             json_result = df.to_json(orient="records")
             output = json.loads(json_result)
+            print(output)
             return output
         else:
             return {
@@ -230,7 +203,10 @@ class ProjectManagement(object):
     @staticmethod
     def number_material(project_material_total, project_material_id):
         cursor = builder.cursor()
-        if type(project_material_total) != int or type(project_material_id) != int or project_material_total <= 0 or project_material_id > 1:
+        print("project material id: " + str(project_material_id))
+        print("total: " + str(project_material_total))
+        if type(project_material_total) != int or type(
+                project_material_id) != int or project_material_total <= 0 or project_material_id < 1:
             return {
                 "message": "number material is update unsuccessfully."
             }
@@ -248,13 +224,12 @@ class ProjectManagement(object):
     @staticmethod
     def get_all_total_material_selection(project_id):
         cursor = builder.cursor()
-        sql_category = '''
+        sql = '''
                                SELECT *
                                FROM ProjectMaterials
                                WHERE ProjectMaterials.project_id = %s
                             '''
-        print(project_id)
-        cursor.execute(sql_category, (project_id,))
+        cursor.execute(sql, (project_id,))
         result = cursor.fetchall()
         builder.commit()
         df = pd.DataFrame(result,

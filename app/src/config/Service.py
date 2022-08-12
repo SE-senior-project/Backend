@@ -17,6 +17,6 @@ def create_server():
 
 try:
     builder = create_server()
-    print('can connect')
+    print('Can connect with the database')
 except:
-    print('cannot connect')
+    print('Cannot connect with the database')
