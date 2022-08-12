@@ -204,6 +204,21 @@ class BOQ(object):
                 "message": "update BOQ name unsuccessfully"
             }
 
+    @staticmethod
+    def update_BOQ_status(BOQ_id):
+        cursor = builder.cursor()
+        try:
+            sql_update_boq_name = '''UPDATE BOQs SET status = 1 WHERE BOQ_id = %s'''
+            cursor.execute(sql_update_boq_name, (BOQ_id,))
+            builder.commit()
+            return {
+                "message": "update BOQ status successfully"
+            }
+        except:
+            return {
+                "message": "update BOQ status unsuccessfully"
+            }
+
 
     # the reason ทำไมข้อมูลถึง -3 จากเดือนปัจจุบัน เพราะทาง front end ไม่สามารถใช้ข้อมูลจาก external ในเดิอนปัจจุบันได้เมื่อเปลี่ยนเดือน
     # เดือนปัจจุบันก็จะเปลี่ยนไป แต่ว่าจะยังคงใช้ไม่ได้ไปจนถึงวัน update website ของเดือนใหม่ จึงทำให้ ทาง front end -2
