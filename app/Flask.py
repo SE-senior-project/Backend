@@ -250,7 +250,6 @@ class FlaskController:
     @app.route("/Remove_BOQ_List", methods=["POST"])
     def Remove_BOQ_list():
         BOQ_list_id = request.json['BOQ_list_id']
-        BOQ_list_id = int(BOQ_list_id)
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
 
     @staticmethod
@@ -293,7 +292,7 @@ class FlaskController:
         return jsonify(CheckList.get_task(checklist_id))
 
 
-FlaskController.Build_all_table()
+# FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

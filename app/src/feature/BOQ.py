@@ -183,6 +183,7 @@ class BOQ(object):
 
     @staticmethod
     def remove_BOQ_list(BOQ_list_id):
+        print('remove'+str(BOQ_list_id))
         cursor = builder.cursor()
         try:
             sql_remove_BOQ_list = '''
