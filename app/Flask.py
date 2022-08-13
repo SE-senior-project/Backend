@@ -191,18 +191,19 @@ class FlaskController:
     # ###################### BOQ #########################
 
     @staticmethod
-    @app.route("/All_BOQ", methods=["GET"])
+    @app.route("/All_BOQ", methods=["POST"])
     def Get_BOQ():
-        # project_id = request.json['project_id']
-        project_id = 1
+        project_id = request.json['project_id']
+        # project_id = 1
         return jsonify(BOQ.get_BOQ(project_id))
 
     @staticmethod
     @app.route("/Generate_BOQ", methods=["POST"])
     def Generate_BOQ():
         BOQ_id = request.json['BOQ_id']
+        project_id = request.json['project_id']
         # BOQ_id = 1
-        return jsonify(BOQ.generate_BOQ(BOQ_id))
+        return jsonify(BOQ.generate_BOQ(BOQ_id, project_id))
 
     @staticmethod
     @app.route("/All_BOQ_List_Selection", methods=["POST"])
@@ -251,7 +252,7 @@ class FlaskController:
         BOQ_list_id = request.json['BOQ_list_id']
         BOQ_list_id = int(BOQ_list_id)
         return jsonify(BOQ.remove_BOQ_list(BOQ_list_id))
-        
+
     @staticmethod
     @app.route("/Update_BOQ_name", methods=["POST"])
     def Update_BOQ_name():
@@ -264,7 +265,6 @@ class FlaskController:
     def Update_BOQ_status():
         BOQ_id = request.json['BOQ_id']
         return jsonify(BOQ.update_BOQ_status(BOQ_id))
-
 
     ####################### CheckList #########################
 
@@ -293,7 +293,7 @@ class FlaskController:
         return jsonify(CheckList.get_task(checklist_id))
 
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve

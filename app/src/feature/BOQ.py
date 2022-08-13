@@ -29,7 +29,7 @@ class BOQ(object):
         return output
 
     @staticmethod
-    def generate_BOQ(BOQ_id):
+    def generate_BOQ(BOQ_id, project_id):
         cursor = builder.cursor()
         sql_BOQ_list = '''
                             SELECT  * FROM BOQLists WHERE BOQLists.BOQ_id = %s
@@ -45,7 +45,8 @@ class BOQ(object):
         last_id = pd.DataFrame(last_id, columns=['last_id'])
         last_id = int(last_id['last_id'])
         last_id = last_id + 1
-
+        BOQ_name = "BOQ " + str(last_id)
+        print('lenght' + str(len(result)))
         if len(result) > 0:
             df = pd.DataFrame(result,
                               columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
@@ -53,12 +54,11 @@ class BOQ(object):
                                        'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
                                        'BOQ_id'])
 
-            BOQ_name = "BOQ " + str(last_id)
             insert_BOQ = '''
                          INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
                          VALUES (%s ,%s,%s,%s);
                                                               '''
-            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, 1))
+            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
             insert_BOQ_list = '''
                   INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) 
                   VALUES (NULL ,%s,%s,%s,%s,%s,%s,%s,%s,%s);
@@ -76,6 +76,12 @@ class BOQ(object):
                     list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
                     cost_of_wage_per_unit,
                     total_wages, total_price, last_id))
+        else:
+            insert_BOQ = '''
+                                     INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
+                                     VALUES (%s ,%s,%s,%s);
+                                                                          '''
+            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
 
         builder.commit()
 
@@ -107,23 +113,27 @@ class BOQ(object):
         cursor.execute(sql_BOQ_list, (BOQ_id,))
         result = cursor.fetchall()
         print(result)
-        # sql_last_id = '''
-        # SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
-        #                               '''
-        # cursor.execute(sql_last_id)
-        # last_id = cursor.fetchall()
         builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit', 'cost_of_materials_per_unit',
-                                   'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                   'BOQ_id', 'BOQ_name'])
+        if len(result) > 0:
+            df = pd.DataFrame(result,
+                              columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
+                                       'cost_of_materials_per_unit',
+                                       'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
+                                       'BOQ_id', 'BOQ_name'])
 
-        # last_id = last_id[0]
-        # df['BOQ_id_last_id'] = pd.Series(last_id)
-
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            print(output)
+            return output
+        else:
+            BOQ_name = "BOQ " + str(BOQ_id)
+            df2 = pd.DataFrame({"BOQ_id": [BOQ_id],
+                                "BOQ_name": [BOQ_name]})
+            json_result = df2.to_json(orient="records")
+            res = json.loads(json_result)
+            print(res)
+            return res
+            # return output
 
     @staticmethod
     def update_BOQ_list(list_name, BOQ_list_id, total_quantity, unit, cost_of_materials_per_unit,
@@ -218,7 +228,6 @@ class BOQ(object):
             return {
                 "message": "update BOQ status unsuccessfully"
             }
-
 
     # the reason ทำไมข้อมูลถึง -3 จากเดือนปัจจุบัน เพราะทาง front end ไม่สามารถใช้ข้อมูลจาก external ในเดิอนปัจจุบันได้เมื่อเปลี่ยนเดือน
     # เดือนปัจจุบันก็จะเปลี่ยนไป แต่ว่าจะยังคงใช้ไม่ได้ไปจนถึงวัน update website ของเดือนใหม่ จึงทำให้ ทาง front end -2
