@@ -58,6 +58,7 @@ class BOQ(object):
                          INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
                          VALUES (%s ,%s,%s,%s);
                                                               '''
+            print("Now generate in" + str(project_id))
             cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
             insert_BOQ_list = '''
                   INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) 
@@ -183,7 +184,7 @@ class BOQ(object):
 
     @staticmethod
     def remove_BOQ_list(BOQ_list_id):
-        print('remove'+str(BOQ_list_id))
+        print('remove' + str(BOQ_list_id))
         cursor = builder.cursor()
         try:
             sql_remove_BOQ_list = '''

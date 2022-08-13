@@ -292,7 +292,7 @@ class FlaskController:
         return jsonify(CheckList.get_task(checklist_id))
 
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
