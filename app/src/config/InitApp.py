@@ -610,4 +610,4 @@ class InitApp:
             InitApp.build_table_task()
             print('Complete build all tables')
         except:
-            print('uncompleted build')
+            print('Uncompleted build')
