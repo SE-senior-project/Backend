@@ -268,12 +268,12 @@ class FlaskController:
     ####################### CheckList #########################
 
     @staticmethod
-    @app.route("/Get_CheckList", methods=["GET"])
+    @app.route("/Get_checkList", methods=["GET"])
     def Get_checkList():
         return jsonify(CheckList.get_checklist())
 
     @staticmethod
-    @app.route("/Select_Task", methods=["POST"])
+    @app.route("/Select_task", methods=["POST"])
     def Select_task():
         checklist_id = request.json['checklist_id']
         project_id = request.json['project_id']
@@ -288,7 +288,7 @@ class FlaskController:
         return jsonify(CheckList.get_select_task(project_id))
 
     @staticmethod
-    @app.route("/Get_List", methods=["POST"])
+    @app.route("/Get_list", methods=["POST"])
     def Get_list():
         checklist_id = request.json['checklist_id']
         return jsonify(CheckList.get_list(checklist_id))
