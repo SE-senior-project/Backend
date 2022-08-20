@@ -17,6 +17,8 @@ class InitApp:
             cursor.execute(delete_BOQ_list)
             delete_BOQ = '''DROP TABLE IF EXISTS BOQs;'''
             cursor.execute(delete_BOQ)
+            delete_CheckBoxes = '''DROP TABLE IF EXISTS CheckBoxes;'''
+            cursor.execute(delete_CheckBoxes)
             delete_project_checklist = '''DROP TABLE IF EXISTS Tasks;'''
             cursor.execute(delete_project_checklist)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
@@ -593,6 +595,34 @@ class InitApp:
         except:
             print('Create fail')
 
+    # CheckBox_Entity
+    @staticmethod
+    def build_table_checkbox():
+        try:
+            cursor = builder.cursor()
+            checkbox = '''
+                                  CREATE TABLE CheckBoxes (
+                                   checkbox_id INT AUTO_INCREMENT PRIMARY KEY,
+                                   list_name VARCHAR(255) ,
+                                   list_description VARCHAR(5000) ,
+                                   status BIT NOT NULL,
+                                   task_id INT, 
+                                   FOREIGN KEY (task_id) REFERENCES Tasks(task_id)
+                                   ON DELETE  CASCADE 
+                                   ON UPDATE CASCADE)
+                                  '''
+            cursor.execute(checkbox)
+            # insert_task = '''
+            #                      INSERT INTO `CheckBoxes` ( checkbox_id,list_id,status,task_id)
+            #                      VALUES
+            #                      (NULL ,2,1);
+            #                      '''
+            # cursor.execute(insert_task)
+            builder.commit()
+            print('Created CheckBox')
+        except:
+            print('Create fail')
+
     @staticmethod
     def build_all_table():
         try:
@@ -604,6 +634,7 @@ class InitApp:
             InitApp.build_table_project()
             InitApp.build_table_project_material()
             InitApp.build_table_task()
+            InitApp.build_table_checkbox()
             InitApp.build_table_BOQ()
             InitApp.build_table_BOQ_list()
             InitApp.build_table_checklist()

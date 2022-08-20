@@ -290,8 +290,16 @@ class FlaskController:
     @staticmethod
     @app.route("/Get_list", methods=["POST"])
     def Get_list():
-        checklist_id = request.json['checklist_id']
-        return jsonify(CheckList.get_list(checklist_id))
+        task_id = request.json['task_id']
+        return jsonify(CheckList.get_list(task_id))
+
+
+
+    @staticmethod
+    @app.route("/Check_checkbox", methods=["POST"])
+    def Check_checkbox():
+        checkbox_id = request.json['checkbox_id']
+        return jsonify(CheckList.check_checkbox(checkbox_id))
 
 
 FlaskController.Build_all_table()
