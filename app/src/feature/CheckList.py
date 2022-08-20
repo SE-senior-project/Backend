@@ -26,15 +26,28 @@ class CheckList(object):
     @staticmethod
     def select_task(checklist_id, project_id):
         cursor = builder.cursor()
-        insert_task = '''
+        find_checklist_id = '''
+                                    SELECT checklist_id
+                                    FROM Tasks
+                                    WHERE checklist_id =%s
+        '''
+        cursor.execute(find_checklist_id, (checklist_id,))
+        result = cursor.fetchall()
+        if len(result) == 0:
+            insert_task = '''
                                        INSERT INTO Tasks (checklist_id,project_id) 
                                        VALUES (%s ,%s);
                                                                             '''
-        cursor.execute(insert_task, (checklist_id, project_id))
-        builder.commit()
-        return {
-            'message': 'Select id successfully'
-        }
+            cursor.execute(insert_task, (checklist_id, project_id))
+            builder.commit()
+            return {
+                'message': 'Select id successfully'
+            }
+        else:
+            builder.commit()
+            return {
+                'message': 'already has checklist'
+            }
 
     @staticmethod
     def get_select_task(project_id):
