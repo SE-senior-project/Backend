@@ -11,89 +11,103 @@ class BOQ(object):
 
     @staticmethod
     def get_BOQ(project_id):
-        cursor = builder.cursor()
-        sql_BOQ_list = '''
-                                   SELECT *
-                                   FROM BOQs
-                                   WHERE project_id = %s
-                                '''
-        print('Project id:' + str(project_id))
-        cursor.execute(sql_BOQ_list, (project_id,))
-        result = cursor.fetchall()
-        print(result)
-        builder.commit()
-        df = pd.DataFrame(result,
-                          columns=['id', 'BOQ_name', 'status', 'project_id'])
-        json_result = df.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+        if type(project_id) == int:
+            cursor = builder.cursor()
+            sql_BOQ_list = '''
+                                    SELECT *
+                                    FROM BOQs
+                                    WHERE project_id = %s
+                                 '''
+            print('Project id:' + str(project_id))
+            cursor.execute(sql_BOQ_list, (project_id,))
+            result = cursor.fetchall()
+            print(result)
+            builder.commit()
+
+            df = pd.DataFrame(result,
+                              columns=['id', 'BOQ_name', 'status', 'project_id'])
+            json_result = df.to_json(orient="records")
+            output = json.loads(json_result)
+            return output
+
+        else:
+            return {
+                "message": "invalid parameter type"
+            }
 
     @staticmethod
     def generate_BOQ(BOQ_id, project_id):
-        cursor = builder.cursor()
-        sql_BOQ_list = '''
+        if type(project_id) == int and type(BOQ_id) == int:
+            cursor = builder.cursor()
+            sql_BOQ_list = '''
                             SELECT  * FROM BOQLists WHERE BOQLists.BOQ_id = %s
                                   '''
-        print('generate BOQ id:' + str(BOQ_id))
-        cursor.execute(sql_BOQ_list, (BOQ_id,))
-        result = cursor.fetchall()
-        sql_last_id = '''
-                     SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
-                                                   '''
-        cursor.execute(sql_last_id)
-        last_id = cursor.fetchall()
-        last_id = pd.DataFrame(last_id, columns=['last_id'])
-        last_id = int(last_id['last_id'])
-        last_id = last_id + 1
-        BOQ_name = "BOQ " + str(last_id)
-        print('lenght' + str(len(result)))
-        if len(result) > 0:
-            df = pd.DataFrame(result,
-                              columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
-                                       'cost_of_materials_per_unit',
-                                       'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                       'BOQ_id'])
+            print('generate BOQ id:' + str(BOQ_id))
+            cursor.execute(sql_BOQ_list, (BOQ_id,))
+            result = cursor.fetchall()
+            sql_last_id = '''
+                         SELECT BOQ_id FROM BOQs ORDER BY BOQ_id DESC LIMIT 1
+                                                       '''
+            cursor.execute(sql_last_id)
+            last_id = cursor.fetchall()
+            last_id = pd.DataFrame(last_id, columns=['last_id'])
+            last_id = int(last_id['last_id'])
+            last_id = last_id + 1
+            BOQ_name = "BOQ " + str(last_id)
+            print('lenght' + str(len(result)))
+            if len(result) > 0:
+                df = pd.DataFrame(result,
+                                  columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
+                                           'cost_of_materials_per_unit',
+                                           'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages',
+                                           'total_price',
+                                           'BOQ_id'])
 
-            insert_BOQ = '''
+                insert_BOQ = '''
                          INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
                          VALUES (%s ,%s,%s,%s);
                                                               '''
-            print("Now generate in" + str(project_id))
-            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
-            insert_BOQ_list = '''
+                print("Now generate in" + str(project_id))
+                cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
+                insert_BOQ_list = '''
                   INSERT INTO BOQLists ( BOQ_list_id,list_name,total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id) 
                   VALUES (NULL ,%s,%s,%s,%s,%s,%s,%s,%s,%s);
                                                        '''
-            for i in df.iloc:
-                list_name = str(i['list_name'])
-                total_quantity = float(i['total_quantity'])
-                unit = str(i['unit'])
-                cost_of_materials_per_unit = float(i['cost_of_materials_per_unit'])
-                total_cost_materials = float(i['total_cost_materials'])
-                cost_of_wage_per_unit = float(i['cost_of_wage_per_unit'])
-                total_wages = float(i['total_wages'])
-                total_price = float(i['total_price'])
-                cursor.execute(insert_BOQ_list, (
-                    list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
-                    cost_of_wage_per_unit,
-                    total_wages, total_price, last_id))
-        else:
-            insert_BOQ = '''
+                for i in df.iloc:
+                    list_name = str(i['list_name'])
+                    total_quantity = float(i['total_quantity'])
+                    unit = str(i['unit'])
+                    cost_of_materials_per_unit = float(i['cost_of_materials_per_unit'])
+                    total_cost_materials = float(i['total_cost_materials'])
+                    cost_of_wage_per_unit = float(i['cost_of_wage_per_unit'])
+                    total_wages = float(i['total_wages'])
+                    total_price = float(i['total_price'])
+                    cursor.execute(insert_BOQ_list, (
+                        list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
+                        cost_of_wage_per_unit,
+                        total_wages, total_price, last_id))
+            else:
+                insert_BOQ = '''
                                      INSERT INTO BOQs (BOQ_id,BOQ_name,status,project_id) 
                                      VALUES (%s ,%s,%s,%s);
                                                                           '''
-            cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
+                cursor.execute(insert_BOQ, (last_id, BOQ_name, 0, project_id))
 
-        builder.commit()
+            builder.commit()
 
-        return {
-            'last_id': last_id
-        }
+            return {
+                'last_id': last_id
+            }
+        else:
+            return {
+                "message": "invalid parameter type"
+            }
 
     @staticmethod
     def get_BOQ_list_selection(BOQ_id):
-        cursor = builder.cursor()
-        sql_BOQ_list = '''
+        if type(BOQ_id) == int:
+            cursor = builder.cursor()
+            sql_BOQ_list = '''
                         SELECT 
                         BOQLists.BOQ_list_id, 
                         BOQLists.list_name, 
@@ -110,125 +124,162 @@ class BOQ(object):
                                  INNER JOIN BOQs on BOQLists.BOQ_id = BOQs.BOQ_id
                                  WHERE BOQLists.BOQ_id = %s
                               '''
-        print('BOQ id:' + str(BOQ_id))
-        cursor.execute(sql_BOQ_list, (BOQ_id,))
-        result = cursor.fetchall()
-        print(result)
-        builder.commit()
-        if len(result) > 0:
-            df = pd.DataFrame(result,
-                              columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
-                                       'cost_of_materials_per_unit',
-                                       'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages', 'total_price',
-                                       'BOQ_id', 'BOQ_name'])
+            print('BOQ id:' + str(BOQ_id))
+            cursor.execute(sql_BOQ_list, (BOQ_id,))
+            result = cursor.fetchall()
+            print(result)
+            builder.commit()
+            if len(result) > 0:
+                df = pd.DataFrame(result,
+                                  columns=['BOQ_list_id', 'list_name', 'total_quantity', 'unit',
+                                           'cost_of_materials_per_unit',
+                                           'total_cost_materials', 'cost_of_wage_per_unit', 'total_wages',
+                                           'total_price',
+                                           'BOQ_id', 'BOQ_name'])
 
-            json_result = df.to_json(orient="records")
-            output = json.loads(json_result)
-            print(output)
-            return output
+                json_result = df.to_json(orient="records")
+                output = json.loads(json_result)
+                print(output)
+                return output
+            else:
+                BOQ_name = "BOQ " + str(BOQ_id)
+                df2 = pd.DataFrame({"BOQ_id": [BOQ_id],
+                                    "BOQ_name": [BOQ_name]})
+                json_result = df2.to_json(orient="records")
+                res = json.loads(json_result)
+                print(res)
+                return res
         else:
-            BOQ_name = "BOQ " + str(BOQ_id)
-            df2 = pd.DataFrame({"BOQ_id": [BOQ_id],
-                                "BOQ_name": [BOQ_name]})
-            json_result = df2.to_json(orient="records")
-            res = json.loads(json_result)
-            print(res)
-            return res
+            return {
+                "message": "invalid parameter type"
+            }
+
             # return output
 
     @staticmethod
     def update_BOQ_list(list_name, BOQ_list_id, total_quantity, unit, cost_of_materials_per_unit,
                         cost_of_wage_per_unit):
-        cursor = builder.cursor()
-        try:
-            sql_update_BOQ_list = '''UPDATE BOQLists SET list_name = %s, total_quantity = %s, unit = %s, cost_of_materials_per_unit =%s, total_cost_materials= %s, cost_of_wage_per_unit =%s ,total_wages =%s, total_price = %s WHERE BOQ_list_id = %s'''
+        if type(list_name) == str and type(BOQ_list_id) == int and type(total_quantity) == float and type(
+                unit) == str and type(cost_of_wage_per_unit) == float and type(cost_of_materials_per_unit) == float:
+            cursor = builder.cursor()
+            try:
+                sql_update_BOQ_list = '''UPDATE BOQLists SET list_name = %s, total_quantity = %s, unit = %s, cost_of_materials_per_unit =%s, total_cost_materials= %s, cost_of_wage_per_unit =%s ,total_wages =%s, total_price = %s WHERE BOQ_list_id = %s'''
 
-            total_cost_materials = total_quantity * cost_of_materials_per_unit
-            total_wages = total_quantity * cost_of_wage_per_unit
-            total_price = total_cost_materials + total_wages
-            cursor.execute(sql_update_BOQ_list,
-                           (list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
-                            cost_of_wage_per_unit, total_wages, total_price, BOQ_list_id))
-            return {
-                "message": "update BOQ list successfully"
-            }
+                total_cost_materials = total_quantity * cost_of_materials_per_unit
+                total_wages = total_quantity * cost_of_wage_per_unit
+                total_price = total_cost_materials + total_wages
+                cursor.execute(sql_update_BOQ_list,
+                               (list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
+                                cost_of_wage_per_unit, total_wages, total_price, BOQ_list_id))
+                builder.commit()
+                return {
+                    "message": "update BOQ list successfully"
+                }
 
-        except:
+            except:
+                return {
+                    "message": "update BOQ list unsuccessfully"
+                }
+        else:
             return {
-                "message": "update BOQ list unsuccessfully"
+                "message": "invalid parameter type"
             }
 
     @staticmethod
     def add_BOQ_list(list_name, BOQ_id, total_quantity, unit, cost_of_materials_per_unit,
                      cost_of_wage_per_unit):
-        cursor = builder.cursor()
-        try:
-            sql_add_BOQ_list = '''INSERT INTO BOQLists 
-            (list_name, total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id)
-                            VALUES (%s ,%s, %s, %s, %s, %s, %s, %s, %s) '''
+        if type(list_name) == str and type(BOQ_id) == int and type(total_quantity) == float and type(
+                unit) == str and type(cost_of_wage_per_unit) == float and type(cost_of_materials_per_unit) == float:
+            cursor = builder.cursor()
+            try:
+                sql_add_BOQ_list = '''INSERT INTO BOQLists 
+                (list_name, total_quantity,unit,cost_of_materials_per_unit,total_cost_materials,cost_of_wage_per_unit,total_wages,total_price,BOQ_id)
+                                VALUES (%s ,%s, %s, %s, %s, %s, %s, %s, %s) '''
 
-            total_cost_materials = total_quantity * cost_of_materials_per_unit
-            total_wages = total_quantity * cost_of_wage_per_unit
-            total_price = total_cost_materials + total_wages
-            cursor.execute(sql_add_BOQ_list,
-                           (list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
-                            cost_of_wage_per_unit, total_wages, total_price, BOQ_id))
-            return {
-                "message": "add BOQ list successfully"
-            }
+                total_cost_materials = total_quantity * cost_of_materials_per_unit
+                total_wages = total_quantity * cost_of_wage_per_unit
+                total_price = total_cost_materials + total_wages
+                cursor.execute(sql_add_BOQ_list,
+                               (list_name, total_quantity, unit, cost_of_materials_per_unit, total_cost_materials,
+                                cost_of_wage_per_unit, total_wages, total_price, BOQ_id))
+                builder.commit()
+                return {
+                    "message": "add BOQ list successfully"
+                }
 
-        except:
+            except:
+                return {
+                    "message": "add BOQ list unsuccessfully"
+                }
+        else:
             return {
-                "message": "add BOQ list unsuccessfully"
+                "message": "invalid parameter type"
             }
 
     @staticmethod
     def remove_BOQ_list(BOQ_list_id):
         print('remove' + str(BOQ_list_id))
-        cursor = builder.cursor()
-        try:
-            sql_remove_BOQ_list = '''
-            DELETE FROM BOQLists
-            WHERE BOQ_list_id = %s'''
+        if type(BOQ_list_id) == int:
+            cursor = builder.cursor()
+            try:
+                sql_remove_BOQ_list = '''
+                DELETE FROM BOQLists
+                WHERE BOQ_list_id = %s '''
 
-            cursor.execute(sql_remove_BOQ_list, (BOQ_list_id,))
-            return {
-                "message": "remove BOQ list successfully"
-            }
+                cursor.execute(sql_remove_BOQ_list, (BOQ_list_id,))
+                builder.commit()
+                return {
+                    "message": "remove BOQ list successfully"
+                }
 
-        except:
+            except:
+                return {
+                    "message": "remove BOQ list unsuccessfully"
+                }
+        else:
             return {
-                "message": "remove BOQ list unsuccessfully"
+                "message": "invalid parameter type"
             }
 
     @staticmethod
     def update_BOQ_name(BOQ_id, BOQ_name):
-        cursor = builder.cursor()
-        try:
-            sql_update_boq_name = '''UPDATE BOQs SET BOQ_name = %s WHERE BOQ_id = %s'''
-            cursor.execute(sql_update_boq_name, (BOQ_name, BOQ_id))
-            builder.commit()
+        if type(BOQ_id) == int and type(BOQ_name) == str:
+            cursor = builder.cursor()
+            try:
+                sql_update_boq_name = '''UPDATE BOQs SET BOQ_name = %s WHERE BOQ_id = %s'''
+                cursor.execute(sql_update_boq_name, (BOQ_name, BOQ_id))
+                builder.commit()
+                return {
+                    "message": "update BOQ name successfully"
+                }
+            except:
+                return {
+                    "message": "update BOQ name unsuccessfully"
+                }
+        else:
             return {
-                "message": "update BOQ name successfully"
+                "message": "invalid parameter type"
             }
-        except:
-            return {
-                "message": "update BOQ name unsuccessfully"
-            }
+
 
     @staticmethod
     def update_BOQ_status(BOQ_id):
-        cursor = builder.cursor()
-        try:
-            sql_update_boq_name = '''UPDATE BOQs SET status = 1 WHERE BOQ_id = %s'''
-            cursor.execute(sql_update_boq_name, (BOQ_id,))
-            builder.commit()
-            return {
+        if type(BOQ_id) == int:
+            cursor = builder.cursor()
+            try:
+                sql_update_boq_name = '''UPDATE BOQs SET status = 1 WHERE BOQ_id = %s'''
+                cursor.execute(sql_update_boq_name, (BOQ_id,))
+                builder.commit()
+                return {
                 "message": "update BOQ status successfully"
-            }
-        except:
-            return {
+                }
+            except:
+                return {
                 "message": "update BOQ status unsuccessfully"
+                }
+        else:
+            return {
+                "message": "invalid parameter type"
             }
 
     # the reason ทำไมข้อมูลถึง -3 จากเดือนปัจจุบัน เพราะทาง front end ไม่สามารถใช้ข้อมูลจาก external ในเดิอนปัจจุบันได้เมื่อเปลี่ยนเดือน
