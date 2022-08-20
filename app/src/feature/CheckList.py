@@ -29,9 +29,9 @@ class CheckList(object):
         find_checklist_id = '''
                                     SELECT checklist_id
                                     FROM Tasks
-                                    WHERE checklist_id =%s
+                                    WHERE checklist_id =%s AND project_id =%s
         '''
-        cursor.execute(find_checklist_id, (checklist_id,))
+        cursor.execute(find_checklist_id, (checklist_id, project_id))
         result = cursor.fetchall()
         if len(result) == 0:
             insert_task = '''
