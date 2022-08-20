@@ -241,35 +241,45 @@ class BOQ(object):
                 "message": "invalid parameter type"
             }
 
-
     @staticmethod
     def update_BOQ_name(BOQ_id, BOQ_name):
-        cursor = builder.cursor()
-        try:
-            sql_update_boq_name = '''UPDATE BOQs SET BOQ_name = %s WHERE BOQ_id = %s'''
-            cursor.execute(sql_update_boq_name, (BOQ_name, BOQ_id))
-            builder.commit()
+        if type(BOQ_id) == int and type(BOQ_name) == str:
+            cursor = builder.cursor()
+            try:
+                sql_update_boq_name = '''UPDATE BOQs SET BOQ_name = %s WHERE BOQ_id = %s'''
+                cursor.execute(sql_update_boq_name, (BOQ_name, BOQ_id))
+                builder.commit()
+                return {
+                    "message": "update BOQ name successfully"
+                }
+            except:
+                return {
+                    "message": "update BOQ name unsuccessfully"
+                }
+        else:
             return {
-                "message": "update BOQ name successfully"
+                "message": "invalid parameter type"
             }
-        except:
-            return {
-                "message": "update BOQ name unsuccessfully"
-            }
+
 
     @staticmethod
     def update_BOQ_status(BOQ_id):
-        cursor = builder.cursor()
-        try:
-            sql_update_boq_name = '''UPDATE BOQs SET status = 1 WHERE BOQ_id = %s'''
-            cursor.execute(sql_update_boq_name, (BOQ_id,))
-            builder.commit()
-            return {
+        if type(BOQ_id) == int:
+            cursor = builder.cursor()
+            try:
+                sql_update_boq_name = '''UPDATE BOQs SET status = 1 WHERE BOQ_id = %s'''
+                cursor.execute(sql_update_boq_name, (BOQ_id,))
+                builder.commit()
+                return {
                 "message": "update BOQ status successfully"
-            }
-        except:
-            return {
+                }
+            except:
+                return {
                 "message": "update BOQ status unsuccessfully"
+                }
+        else:
+            return {
+                "message": "invalid parameter type"
             }
 
     # the reason ทำไมข้อมูลถึง -3 จากเดือนปัจจุบัน เพราะทาง front end ไม่สามารถใช้ข้อมูลจาก external ในเดิอนปัจจุบันได้เมื่อเปลี่ยนเดือน

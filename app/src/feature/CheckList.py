@@ -24,28 +24,30 @@ class CheckList(object):
         return output
 
     @staticmethod
-    def select_checkList(checklist_id, project_id):
+    def select_task(checklist_id, project_id):
         cursor = builder.cursor()
-        insert_checklist = '''
-                                 INSERT INTO ProjectCheckLists (checklist_id,project_id) 
-                                 VALUES (%s ,%s);
-                                                                      '''
-        cursor.execute(insert_checklist, (checklist_id, project_id))
+        insert_task = '''
+                                       INSERT INTO Tasks (checklist_id,project_id) 
+                                       VALUES (%s ,%s);
+                                                                            '''
+        cursor.execute(insert_task, (checklist_id, project_id))
         builder.commit()
-        return {'message': 'insert checklist pass'}
+        return {
+            'message': 'Select id successfully'
+        }
 
     @staticmethod
-    def get_select_checkList(project_id):
+    def get_select_task(project_id):
         cursor = builder.cursor()
-        sql_select_checklist = '''
+        sql_select_task = '''
                                                        SELECT *
-                                                       FROM ProjectCheckLists
-                                                       WHERE ProjectCheckLists.project_id = %s
+                                                       FROM Tasks
+                                                       WHERE Tasks.project_id = %s
                                                     '''
-        cursor.execute(sql_select_checklist, (project_id,))
+        cursor.execute(sql_select_task, (project_id,))
         result = cursor.fetchall()
         df = pd.DataFrame(result,
-                          columns=['project_checklist_id', 'checklist_id', 'project_id'])
+                          columns=['task_id', 'checklist_id', 'project_id'])
         checklist_id = '''
                                                              SELECT checklist_id
                                                              FROM Checklists
@@ -78,36 +80,32 @@ class CheckList(object):
         return output
 
     @staticmethod
-    def get_task(checklist_id):
+    def get_list(checklist_id):
         cursor = builder.cursor()
-        sql_select_checklist = '''
+        sql_select_task = '''
                                                     SELECT *
-                                                    FROM ProjectCheckLists
-                                                    WHERE ProjectCheckLists.checklist_id = %s
+                                                    FROM Tasks
+                                                    WHERE Tasks.checklist_id = %s
                                                  '''
-        cursor.execute(sql_select_checklist, (checklist_id,))
+        cursor.execute(sql_select_task, (checklist_id,))
         result = cursor.fetchall()
         df = pd.DataFrame(result,
-                          columns=['project_checklist_id', 'checklist_id', 'project_id'])
+                          columns=['task_id', 'checklist_id', 'project_id'])
 
         Cid = int(df['checklist_id'].iloc[0])
-        sql_select_task = '''
+        sql_select_list = '''
                                                           SELECT *
-                                                          FROM Tasks
-                                                          WHERE Tasks.checklist_id = %s
+                                                          FROM Lists
+                                                          WHERE Lists.checklist_id = %s
                                                        '''
-        cursor.execute(sql_select_task, (Cid,))
-        task = cursor.fetchall()
+        cursor.execute(sql_select_list, (Cid,))
+        lists = cursor.fetchall()
         builder.commit()
-        df2 = pd.DataFrame(task,
-                           columns=['task_id', 'task_name', 'task_description', 'checklist_id'])
+        df2 = pd.DataFrame(lists,
+                           columns=['list_id', 'list_name', 'list_description', 'checklist_id'])
         json_result = df2.to_json(orient="records")
         output = json.loads(json_result)
         return output
-
-    @staticmethod
-    def select_task(checklist_id, project_id):
-        return 1
 
     # @staticmethod
     # def get_task(checklist_id):

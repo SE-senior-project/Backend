@@ -9,7 +9,7 @@ class InitApp:
     def drop_table():
         try:
             cursor = builder.cursor()
-            delete_task = '''DROP TABLE IF EXISTS Tasks;'''
+            delete_task = '''DROP TABLE IF EXISTS Lists;'''
             cursor.execute(delete_task)
             delete_checklist = '''DROP TABLE IF EXISTS Checklists;'''
             cursor.execute(delete_checklist)
@@ -17,7 +17,7 @@ class InitApp:
             cursor.execute(delete_BOQ_list)
             delete_BOQ = '''DROP TABLE IF EXISTS BOQs;'''
             cursor.execute(delete_BOQ)
-            delete_project_checklist = '''DROP TABLE IF EXISTS ProjectCheckLists;'''
+            delete_project_checklist = '''DROP TABLE IF EXISTS Tasks;'''
             cursor.execute(delete_project_checklist)
             delete_project_material = '''DROP TABLE IF EXISTS ProjectMaterials;'''
             cursor.execute(delete_project_material)
@@ -489,22 +489,22 @@ class InitApp:
             print('Create fail')
         # Project_Entity
 
-    # Task_Entity
+    # List_Entity
     @staticmethod
-    def build_table_task():
+    def build_table_list():
         try:
             cursor = builder.cursor()
-            task = '''
-                           CREATE TABLE Tasks (
-                           task_id INT AUTO_INCREMENT PRIMARY KEY,
-                           task_name VARCHAR(255) NOT NULL,
-                           task_description VARCHAR(5000) NOT NULL,
+            lists = '''
+                           CREATE TABLE Lists (
+                           list_id INT AUTO_INCREMENT PRIMARY KEY,
+                           list_name VARCHAR(255) NOT NULL,
+                           list_description VARCHAR(5000) NOT NULL,
                            checklist_id INT, FOREIGN KEY (checklist_id) REFERENCES Checklists(checklist_id)ON DELETE  CASCADE ON UPDATE CASCADE
                      )
                            '''
-            cursor.execute(task)
-            insert_task = '''
-                          INSERT INTO `Tasks`( `task_id`,`task_name`,`task_description`,`checklist_id`) 
+            cursor.execute(lists)
+            insert_list = '''
+                          INSERT INTO `Lists`( `list_id`,`list_name`,`list_description`,`checklist_id`) 
                           VALUES (NULL ,'ประตูรั้ว','หากเป็นบานพับจะต้องเปิดปิดได้สะดวกไม่ฝืดเคือง ถ้าเป็นเเบบเลื่อนเปิดค้างไว้ตรงไหนจะต้องหยุดอยู่ตรงนั้น ไม่เลื่อนไหลเอง งานสีต้องทาเรียบร้อยครบทั้งบาน ไม่มีส่วนที่เห็นเนื้อวัสดุหรือขึ้นสนิม กลอนประตูสามารถใช้การได้ดี',1)
                           ,(NULL ,'รั้ว','รั้วจะต้องไม่เอียง ไม่ล้ม ไม่มีรอยแตกร้าว สีหรือวัสดุพื้นผิวจะต้องเรียบร้อยสวยงาม ไม่มีคราบความสกปรกจากการก่อสร้าง',1)
                           ,(NULL ,'ดินถมรอบบ้าน','ดินที่ถมต้องถมเต็มพื้นที่ ปรับระดับของดินบริเวณรอบบ้านให้เรียบหรือเป็นเนินอย่างสวยงาม ไม่มีเศษวัสดุก่อสร้างหรือคราบปูนหลงเหลือ',1)
@@ -560,36 +560,36 @@ class InitApp:
                           
                           ;
                           '''
-            cursor.execute(insert_task)
+            cursor.execute(insert_list)
             builder.commit()
-            print('Created Task')
+            print('Created List')
         except:
             print('Create fail')
         # Project_Entity
 
-    # Project_CheckList_Entity
+    # Task_Entity
     @staticmethod
-    def build_table_project_checklist():
+    def build_table_task():
         try:
             cursor = builder.cursor()
-            project_checklist = '''
-                           CREATE TABLE ProjectCheckLists (
-                            project_checklist_id INT AUTO_INCREMENT PRIMARY KEY,
+            task = '''
+                           CREATE TABLE Tasks (
+                            task_id INT AUTO_INCREMENT PRIMARY KEY,
                             checklist_id INT NOT NULL,  
                             project_id INT, 
                             FOREIGN KEY (project_id) REFERENCES Projects(project_id)
                             ON DELETE  CASCADE 
                             ON UPDATE CASCADE)
                            '''
-            cursor.execute(project_checklist)
-            insert_project_checklist = '''
-                          INSERT INTO `ProjectCheckLists` ( project_checklist_id,checklist_id,project_id) 
+            cursor.execute(task)
+            insert_task = '''
+                          INSERT INTO `Tasks` ( task_id,checklist_id,project_id) 
                           VALUES
                           (NULL ,2,1);
                           '''
-            cursor.execute(insert_project_checklist)
+            cursor.execute(insert_task)
             builder.commit()
-            print('Created ProjectChecklist')
+            print('Created Task')
         except:
             print('Create fail')
 
@@ -603,11 +603,11 @@ class InitApp:
             InitApp.build_table_material()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
-            InitApp.build_table_project_checklist()
+            InitApp.build_table_task()
             InitApp.build_table_BOQ()
             InitApp.build_table_BOQ_list()
             InitApp.build_table_checklist()
-            InitApp.build_table_task()
+            InitApp.build_table_list()
             print('Complete build all tables')
         except:
             print('Uncompleted build')

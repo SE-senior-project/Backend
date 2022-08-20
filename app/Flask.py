@@ -269,27 +269,29 @@ class FlaskController:
 
     @staticmethod
     @app.route("/Get_CheckList", methods=["GET"])
-    def Get_CheckList():
+    def Get_checkList():
         return jsonify(CheckList.get_checklist())
 
     @staticmethod
-    @app.route("/Select_CheckList", methods=["POST"])
-    def Select_CheckList():
+    @app.route("/Select_Task", methods=["POST"])
+    def Select_task():
         checklist_id = request.json['checklist_id']
         project_id = request.json['project_id']
-        return jsonify(CheckList.select_checkList(checklist_id, project_id))
+        print(checklist_id)
+        print(project_id)
+        return jsonify(CheckList.select_task(checklist_id, project_id))
 
     @staticmethod
-    @app.route("/Get_Select_CheckList", methods=["POST"])
-    def Get_Select_CheckList():
+    @app.route("/Get_select_task", methods=["POST"])
+    def Get_select_task():
         project_id = request.json['project_id']
-        return jsonify(CheckList.get_select_checkList(project_id))
+        return jsonify(CheckList.get_select_task(project_id))
 
     @staticmethod
-    @app.route("/Get_Task", methods=["POST"])
-    def Get_Task():
+    @app.route("/Get_List", methods=["POST"])
+    def Get_list():
         checklist_id = request.json['checklist_id']
-        return jsonify(CheckList.get_task(checklist_id))
+        return jsonify(CheckList.get_list(checklist_id))
 
 
 FlaskController.Build_all_table()
