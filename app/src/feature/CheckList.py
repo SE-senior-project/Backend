@@ -1,5 +1,4 @@
 from app.src.config.Service import *
-import requests
 import pandas as pd
 import json
 
@@ -51,6 +50,7 @@ class CheckList(object):
 
     @staticmethod
     def get_select_task(project_id):
+        project_id = 1
         cursor = builder.cursor()
         sql_select_task = ''' SELECT checklist_id,task_id FROM Tasks WHERE Tasks.project_id = %s '''
         cursor.execute(sql_select_task, (project_id,))
@@ -69,7 +69,6 @@ class CheckList(object):
         df2['task_id'] = df['task_id']
 
         ######################################### List ###################################
-        # sql_select_list_id = '''SELECT list_id FROM Lists WHERE Lists.checklist_id = %s '''
         sql_select_list_name = ''' SELECT list_name FROM Lists WHERE Lists.checklist_id = %s'''
         sql_select_list_description = '''SELECT list_description FROM Lists WHERE Lists.checklist_id = %s '''
         List_name = []
@@ -105,6 +104,7 @@ class CheckList(object):
         CheckBoxes_status = []
         count_j = 0
         count_k = 0
+        returnOutput = []
         for i in df2['task_id']:
             cursor.execute(sql_find_length, (int(i),))
             find_length = cursor.fetchall()
@@ -116,14 +116,15 @@ class CheckList(object):
                     count_k = 0
                     count_j = count_j + 1
             count_j = 0
+
             cursor.execute(sql_CheckBoxes_checkbox_id, (int(i),))
             checkbox_id = cursor.fetchall()
             checkbox_id = json.dumps(checkbox_id)
             checkbox_id = checkbox_id.translate(
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_id = list(checkbox_id.split(" "))
-            AllList_id = [eval(x) for x in checkbox_id]
-            Checkbox_id.append(AllList_id)
+            checkbox_id = [eval(x) for x in checkbox_id]
+            # Checkbox_id.append(checkbox_id)
 
             cursor.execute(sql_CheckBoxes_list_name, (int(i),))
             checkbox_list_name = cursor.fetchall()
@@ -131,7 +132,7 @@ class CheckList(object):
             checkbox_list_name = checkbox_list_name.translate(
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_list_name = list(checkbox_list_name.split(" "))
-            CheckBoxes_list_name.append(checkbox_list_name)
+            # CheckBoxes_list_name.append(checkbox_list_name)
 
             cursor.execute(sql_CheckBoxes_list_description, (int(i),))
             checkbox_list_description = cursor.fetchall()
@@ -139,7 +140,7 @@ class CheckList(object):
             checkbox_list_description = checkbox_list_description.translate(
                 str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_list_description = list(checkbox_list_description.split(','))
-            CheckBoxes_list_description.append(checkbox_list_description)
+            # CheckBoxes_list_description.append(checkbox_list_description)
 
             cursor.execute(sql_CheckBoxes_status, (int(i),))
             checkbox_status = cursor.fetchall()
@@ -148,18 +149,31 @@ class CheckList(object):
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_status = list(checkbox_status.split(" "))
             checkbox_status = [eval(x) for x in checkbox_status]
-            CheckBoxes_status.append(checkbox_status)
+            # CheckBoxes_status.append(checkbox_status)
 
-        dfList = pd.DataFrame(
-            {'checklist_name': df2['checklist_name'], 'task_id': df2['task_id'],
-             'check_box_id': Checkbox_id,
-             'list_name': CheckBoxes_list_name, 'list_description': CheckBoxes_list_description,
-             'status': CheckBoxes_status})
-
-        builder.commit()
-        json_result = dfList.to_json(orient="records")
-        output = json.loads(json_result)
-        return output
+            returnOutput.append({
+                'checklist_name': df2.iloc[0, 2],
+                'task_id': i,
+                'checkbox': {
+                    'check_box_id': checkbox_id,
+                    'list_name': checkbox_list_name,
+                    'list_description': checkbox_list_description,
+                    'status': checkbox_status
+                }
+            })
+        print(returnOutput)
+        # output = json.loads(returnOutput)
+        # returnOutput = json.dumps(returnOutput, ensure_ascii=False)
+        # print(type(returnOutput))
+        # dfList = pd.DataFrame(
+        #     {'checklist_name': df2['checklist_name'], 'task_id': df2['task_id'],
+        #      'checkbox': returnOutput
+        #      })
+        #
+        # builder.commit()
+        # json_result = dfList.to_json(orient="records")
+        # output = json.loads(json_result)
+        return returnOutput
 
     @staticmethod
     def check_checkbox(checkbox_id):
