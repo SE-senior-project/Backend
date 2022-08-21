@@ -300,7 +300,7 @@ class FlaskController:
         return jsonify(CheckList.check_checkbox(checkbox_id))
 
 
-# FlaskController.Build_all_table()
+FlaskController.Build_all_table()
 
 if __name__ == '__main__':
     # from waitress import serve
