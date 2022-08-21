@@ -51,6 +51,7 @@ class CheckList(object):
 
     @staticmethod
     def get_select_task(project_id):
+        project_id = 1
         cursor = builder.cursor()
         sql_select_task = '''
                                                        SELECT *
@@ -84,11 +85,90 @@ class CheckList(object):
             val = json.dumps(res2, ensure_ascii=False)
             list_name.append(val.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8')))
 
-        builder.commit()
         df2['checklist_id'] = list_id
         df2['checklist_name'] = list_name
         df2['task_id'] = df['task_id']
 
+
+
+
+        sql_select_task = '''
+                                                            SELECT checklist_id
+                                                            FROM Tasks
+                                                            WHERE Tasks.task_id = %s
+                                                         '''
+        all_checklist_id = []
+        for i in df2['task_id']:
+            cursor.execute(sql_select_task, (int(i),))
+            result = cursor.fetchall()
+            val = json.dumps(result)
+            val = val.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            val = int(val)
+            all_checklist_id.append(val)
+
+        All_checklist_id = pd.DataFrame(all_checklist_id,
+                                        columns=['checklist_id'])
+
+        sql_select_list_id = '''
+                                                                            SELECT list_id
+                                                                            FROM Lists
+                                                                            WHERE Lists.checklist_id = %s
+                                                                         '''
+        sql_select_list_name = '''
+                                                                                    SELECT list_name
+                                                                                    FROM Lists
+                                                                                    WHERE Lists.checklist_id = %s
+                                                                                 '''
+        sql_select_list_description = '''
+                                                                                    SELECT list_description
+                                                                                    FROM Lists
+                                                                                    WHERE Lists.checklist_id = %s
+                                                                                 '''
+        sql_select_checklist_id = '''
+                                                                                    SELECT checklist_id
+                                                                                    FROM Lists
+                                                                                    WHERE Lists.checklist_id = %s
+                                                                                 '''
+
+        dfList = pd.DataFrame(columns=['list_id', 'list_name', 'list_description', 'checklist_id'])
+
+        List_id = []
+        List_name = []
+        List_description = []
+        Checklist_id = []
+        for i in All_checklist_id['checklist_id']:
+            cursor.execute(sql_select_list_id, (int(i),))
+            list_id = cursor.fetchall()
+            list_id = json.dumps(list_id)
+            list_id = list_id.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            List_id.append(list_id)
+
+            cursor.execute(sql_select_list_name, (int(i),))
+            list_name = cursor.fetchall()
+            list_name = json.dumps(list_name, ensure_ascii=False)
+            list_name = list_name.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            List_name.append(list_name)
+
+            cursor.execute(sql_select_list_description, (int(i),))
+            list_description = cursor.fetchall()
+            list_description = json.dumps(list_description, ensure_ascii=False)
+            list_description = list_description.translate(
+                str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            List_description.append(list_description)
+
+            cursor.execute(sql_select_checklist_id, (int(i),))
+            checklist_id = cursor.fetchall()
+            checklist_id = json.dumps(checklist_id)
+            checklist_id = checklist_id.translate(
+                str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            Checklist_id.append(checklist_id)
+
+            # All_list.append(result)
+            # val = json.dumps(result, ensure_ascii=False)
+            # val = val.translate(str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            # print(result)
+
+        builder.commit()
         json_result = df2.to_json(orient="records")
         output = json.loads(json_result)
         return output
