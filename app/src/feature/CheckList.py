@@ -51,7 +51,6 @@ class CheckList(object):
 
     @staticmethod
     def get_select_task(project_id):
-        # project_id = 1
         cursor = builder.cursor()
         sql_select_task = ''' SELECT checklist_id,task_id FROM Tasks WHERE Tasks.project_id = %s '''
         cursor.execute(sql_select_task, (project_id,))
@@ -91,26 +90,22 @@ class CheckList(object):
             list_description = list(list_description.split(','))
             List_description.append(list_description)
 
-        ##################################################################################checkbox#######################
+        ############################################################checkbox#######################
         sql_find_length = ''' SELECT * FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
         insert_list = '''INSERT INTO CheckBoxes ( checkbox_id,list_name,list_description,status,task_id) VALUES (NULL,%s,%s,%s,%s);'''
-        # sql_update_list = '''UPDATE CheckBoxes SET list_description = %s WHERE task_id = %s'''
 
         sql_CheckBoxes_checkbox_id = '''SELECT checkbox_id FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
         sql_CheckBoxes_list_name = '''SELECT list_name FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
         sql_CheckBoxes_list_description = '''SELECT list_description FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
         sql_CheckBoxes_status = '''SELECT status FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
-        sql_CheckBoxes_task_id = '''SELECT task_id FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
 
         Checkbox_id = []
         CheckBoxes_list_name = []
         CheckBoxes_list_description = []
         CheckBoxes_status = []
-        CheckBoxes_task_id = []
         count_j = 0
         count_k = 0
         for i in df2['task_id']:
-            print(i)
             cursor.execute(sql_find_length, (int(i),))
             find_length = cursor.fetchall()
             if len(find_length) == 0:
@@ -118,50 +113,42 @@ class CheckList(object):
                     for k in j:
                         cursor.execute(insert_list, (k, List_description[count_j][count_k], 0, int(i)))
                         count_k = count_k + 1
+                    count_k = 0
                     count_j = count_j + 1
+            count_j = 0
+            cursor.execute(sql_CheckBoxes_checkbox_id, (int(i),))
+            checkbox_id = cursor.fetchall()
+            checkbox_id = json.dumps(checkbox_id)
+            checkbox_id = checkbox_id.translate(
+                str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            checkbox_id = list(checkbox_id.split(" "))
+            AllList_id = [eval(x) for x in checkbox_id]
+            Checkbox_id.append(AllList_id)
 
-                cursor.execute(sql_CheckBoxes_checkbox_id, (int(i),))
-                checkbox_id = cursor.fetchall()
-                checkbox_id = json.dumps(checkbox_id)
-                checkbox_id = checkbox_id.translate(
-                    str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
-                checkbox_id = list(checkbox_id.split(" "))
-                AllList_id = [eval(x) for x in checkbox_id]
-                Checkbox_id.append(AllList_id)
+            cursor.execute(sql_CheckBoxes_list_name, (int(i),))
+            checkbox_list_name = cursor.fetchall()
+            checkbox_list_name = json.dumps(checkbox_list_name, ensure_ascii=False)
+            checkbox_list_name = checkbox_list_name.translate(
+                str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            checkbox_list_name = list(checkbox_list_name.split(" "))
+            CheckBoxes_list_name.append(checkbox_list_name)
 
-                cursor.execute(sql_CheckBoxes_list_name, (int(i),))
-                checkbox_list_name = cursor.fetchall()
-                checkbox_list_name = json.dumps(checkbox_list_name, ensure_ascii=False)
-                checkbox_list_name = checkbox_list_name.translate(
-                    str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
-                checkbox_list_name = list(checkbox_list_name.split(" "))
-                CheckBoxes_list_name.append(checkbox_list_name)
+            cursor.execute(sql_CheckBoxes_list_description, (int(i),))
+            checkbox_list_description = cursor.fetchall()
+            checkbox_list_description = json.dumps(checkbox_list_description, ensure_ascii=False)
+            checkbox_list_description = checkbox_list_description.translate(
+                str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            checkbox_list_description = list(checkbox_list_description.split(','))
+            CheckBoxes_list_description.append(checkbox_list_description)
 
-                cursor.execute(sql_CheckBoxes_list_description, (int(i),))
-                checkbox_list_description = cursor.fetchall()
-                checkbox_list_description = json.dumps(checkbox_list_description, ensure_ascii=False)
-                checkbox_list_description = checkbox_list_description.translate(
-                    str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
-                checkbox_list_description = list(checkbox_list_description.split(','))
-                CheckBoxes_list_description.append(checkbox_list_description)
-
-                cursor.execute(sql_CheckBoxes_status, (int(i),))
-                checkbox_status = cursor.fetchall()
-                checkbox_status = json.dumps(checkbox_status)
-                checkbox_status = checkbox_status.translate(
-                    str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
-                checkbox_status = list(checkbox_status.split(" "))
-                checkbox_status = [eval(x) for x in checkbox_status]
-                CheckBoxes_status.append(checkbox_status)
-
-                # cursor.execute(sql_CheckBoxes_task_id, (int(i),))
-                # checkbox_task_id = cursor.fetchall()
-                # checkbox_task_id = json.dumps(checkbox_task_id)
-                # checkbox_task_id = checkbox_task_id.translate(
-                #     str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
-                # checkbox_task_id = list(checkbox_task_id.split(" "))
-                # checkbox_task_id = [eval(x) for x in checkbox_task_id]
-                # CheckBoxes_task_id.append(checkbox_task_id)
+            cursor.execute(sql_CheckBoxes_status, (int(i),))
+            checkbox_status = cursor.fetchall()
+            checkbox_status = json.dumps(checkbox_status)
+            checkbox_status = checkbox_status.translate(
+                str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
+            checkbox_status = list(checkbox_status.split(" "))
+            checkbox_status = [eval(x) for x in checkbox_status]
+            CheckBoxes_status.append(checkbox_status)
 
         dfList = pd.DataFrame(
             {'checklist_name': df2['checklist_name'], 'task_id': df2['task_id'],
@@ -177,11 +164,7 @@ class CheckList(object):
     @staticmethod
     def check_checkbox(checkbox_id):
         cursor = builder.cursor()
-        sql_select_status = '''
-                                                            SELECT status
-                                                            FROM CheckBoxes
-                                                            WHERE checkbox_id = %s
-                                                         '''
+        sql_select_status = '''SELECT status FROM CheckBoxes WHERE checkbox_id = %s  '''
         cursor.execute(sql_select_status, (checkbox_id,))
         result = cursor.fetchall()
         df = pd.DataFrame(result, columns=['status'])
@@ -198,70 +181,70 @@ class CheckList(object):
             'message': 'status has change'
         }
 
-    @staticmethod
-    def get_list(task_id):
-        cursor = builder.cursor()
-        sql_select_task = '''
-                                                    SELECT checklist_id
-                                                    FROM Tasks
-                                                    WHERE Tasks.task_id = %s
-                                                 '''
-        cursor.execute(sql_select_task, (task_id,))
-        result = cursor.fetchall()
-        df = pd.DataFrame(result, columns=['checklist_id'])
-        checklist_id = int(df['checklist_id'].iloc[0])
-
-        sql_select_list = '''
-                                                                     SELECT *
-                                                                     FROM Lists
-                                                                     WHERE Lists.checklist_id = %s
-                                                                  '''
-        cursor.execute(sql_select_list, (checklist_id,))
-        lists = cursor.fetchall()
-        df2 = pd.DataFrame(lists, columns=['list_id', 'list_name', 'list_description', 'checklist_id'])
-
-        sql_find_length = '''
-                                                                  SELECT *
-                                                                  FROM CheckBoxes
-                                                                  WHERE CheckBoxes.task_id = %s
-                                                               '''
-        cursor.execute(sql_find_length, (task_id,))
-        find_length = cursor.fetchall()
-
-        if len(find_length) == 0:
-            insert_list = '''
-                                         INSERT INTO CheckBoxes ( checkbox_id,list_name,status,task_id)
-                                         VALUES
-                                         (NULL,%s,%s,%s);
-                                         '''
-            sql_update_list = '''UPDATE CheckBoxes SET list_description = %s WHERE task_id = %s'''
-            for i in df2['list_name']:
-                cursor.execute(insert_list, (i, 0, task_id))
-            for i in df2['list_description']:
-                cursor.execute(sql_update_list, (i, task_id))
-
-            sql_CheckBoxes = '''
-                                                                          SELECT *
-                                                                          FROM CheckBoxes
-                                                                          WHERE CheckBoxes.task_id = %s
-                                                                       '''
-            cursor.execute(sql_CheckBoxes, (task_id,))
-            CheckBoxes = cursor.fetchall()
-            df3 = pd.DataFrame(CheckBoxes,
-                               columns=['checkbox_id', 'list_name', 'list_description', 'status', 'task_id'])
-
-            builder.commit()
-            json_result = df3.to_json(orient="records")
-            output = json.loads(json_result)
-            print('There is no list in the checkbox')
-            return output
-
-        else:
-            print('already has list in checkbox')
-            df3 = pd.DataFrame(find_length,
-                               columns=['checkbox_id', 'list_name', 'list_description', 'status', 'task_id'])
-
-            builder.commit()
-            json_result = df3.to_json(orient="records")
-            output = json.loads(json_result)
-            return output
+    # @staticmethod
+    # def get_list(task_id):
+    #     cursor = builder.cursor()
+    #     sql_select_task = '''
+    #                                                 SELECT checklist_id
+    #                                                 FROM Tasks
+    #                                                 WHERE Tasks.task_id = %s
+    #                                              '''
+    #     cursor.execute(sql_select_task, (task_id,))
+    #     result = cursor.fetchall()
+    #     df = pd.DataFrame(result, columns=['checklist_id'])
+    #     checklist_id = int(df['checklist_id'].iloc[0])
+    #
+    #     sql_select_list = '''
+    #                                                                  SELECT *
+    #                                                                  FROM Lists
+    #                                                                  WHERE Lists.checklist_id = %s
+    #                                                               '''
+    #     cursor.execute(sql_select_list, (checklist_id,))
+    #     lists = cursor.fetchall()
+    #     df2 = pd.DataFrame(lists, columns=['list_id', 'list_name', 'list_description', 'checklist_id'])
+    #
+    #     sql_find_length = '''
+    #                                                               SELECT *
+    #                                                               FROM CheckBoxes
+    #                                                               WHERE CheckBoxes.task_id = %s
+    #                                                            '''
+    #     cursor.execute(sql_find_length, (task_id,))
+    #     find_length = cursor.fetchall()
+    #
+    #     if len(find_length) == 0:
+    #         insert_list = '''
+    #                                      INSERT INTO CheckBoxes ( checkbox_id,list_name,status,task_id)
+    #                                      VALUES
+    #                                      (NULL,%s,%s,%s);
+    #                                      '''
+    #         sql_update_list = '''UPDATE CheckBoxes SET list_description = %s WHERE task_id = %s'''
+    #         for i in df2['list_name']:
+    #             cursor.execute(insert_list, (i, 0, task_id))
+    #         for i in df2['list_description']:
+    #             cursor.execute(sql_update_list, (i, task_id))
+    #
+    #         sql_CheckBoxes = '''
+    #                                                                       SELECT *
+    #                                                                       FROM CheckBoxes
+    #                                                                       WHERE CheckBoxes.task_id = %s
+    #                                                                    '''
+    #         cursor.execute(sql_CheckBoxes, (task_id,))
+    #         CheckBoxes = cursor.fetchall()
+    #         df3 = pd.DataFrame(CheckBoxes,
+    #                            columns=['checkbox_id', 'list_name', 'list_description', 'status', 'task_id'])
+    #
+    #         builder.commit()
+    #         json_result = df3.to_json(orient="records")
+    #         output = json.loads(json_result)
+    #         print('There is no list in the checkbox')
+    #         return output
+    #
+    #     else:
+    #         print('already has list in checkbox')
+    #         df3 = pd.DataFrame(find_length,
+    #                            columns=['checkbox_id', 'list_name', 'list_description', 'status', 'task_id'])
+    #
+    #         builder.commit()
+    #         json_result = df3.to_json(orient="records")
+    #         output = json.loads(json_result)
+    #         return output
