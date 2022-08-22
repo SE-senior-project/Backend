@@ -24,6 +24,8 @@ class CheckList(object):
 
     @staticmethod
     def select_task(checklist_id, project_id):
+        checklist_id = 5
+        project_id = 1
         cursor = builder.cursor()
         find_checklist_id = '''
                                     SELECT checklist_id
@@ -124,7 +126,7 @@ class CheckList(object):
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_id = list(checkbox_id.split(" "))
             checkbox_id = [eval(x) for x in checkbox_id]
-            # Checkbox_id.append(checkbox_id)
+            Checkbox_id.append(checkbox_id)
 
             cursor.execute(sql_CheckBoxes_list_name, (int(i),))
             checkbox_list_name = cursor.fetchall()
@@ -132,7 +134,7 @@ class CheckList(object):
             checkbox_list_name = checkbox_list_name.translate(
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_list_name = list(checkbox_list_name.split(" "))
-            # CheckBoxes_list_name.append(checkbox_list_name)
+            CheckBoxes_list_name.append(checkbox_list_name)
 
             cursor.execute(sql_CheckBoxes_list_description, (int(i),))
             checkbox_list_description = cursor.fetchall()
@@ -140,7 +142,7 @@ class CheckList(object):
             checkbox_list_description = checkbox_list_description.translate(
                 str.maketrans('', '', '([$\'_&+\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_list_description = list(checkbox_list_description.split(','))
-            # CheckBoxes_list_description.append(checkbox_list_description)
+            CheckBoxes_list_description.append(checkbox_list_description)
 
             cursor.execute(sql_CheckBoxes_status, (int(i),))
             checkbox_status = cursor.fetchall()
@@ -149,19 +151,43 @@ class CheckList(object):
                 str.maketrans('', '', '([$\'_&+,\n?@\[\]#|<>^*()%\\!"-\r\])' + U'\xa8'))
             checkbox_status = list(checkbox_status.split(" "))
             checkbox_status = [eval(x) for x in checkbox_status]
-            # CheckBoxes_status.append(checkbox_status)
+            CheckBoxes_status.append(checkbox_status)
 
-            returnOutput.append({
-                'checklist_name': df2.iloc[0, 2],
-                'task_id': i,
-                'checkbox': {
-                    'check_box_id': checkbox_id,
-                    'list_name': checkbox_list_name,
-                    'list_description': checkbox_list_description,
-                    'status': checkbox_status
-                }
-            })
-        print(returnOutput)
+            # returnOutput.append({
+            #     'checkbox': {
+            #         'check_box_id': checkbox_id,
+            #         'list_name': checkbox_list_name,
+            #         'list_description': checkbox_list_description,
+            #         'status': checkbox_status
+            #     }
+            # })
+        dfList = pd.DataFrame(
+            {'checkbox_id': Checkbox_id, 'list_name': CheckBoxes_list_name,
+             'list_description': CheckBoxes_list_description, 'status': CheckBoxes_status
+             })
+        number_column = dfList.loc[:, 'checkbox_id']
+
+        # for i in dfList:
+        #     if i == 'checkbox_id':
+        #         print('checkbox_id')
+        #         for j in i:
+        #
+        #
+        #     if i == 'list_name':
+        #         print('list_name')
+        #     if i == 'list_description':
+        #         print('list_description')
+        #     if i == 'status':
+        #         print('status')
+        #     # for j in i:
+        #     #     print(j)
+
+
+
+
+        print(dfList)
+        # 'checklist_name': df2.iloc[0, 2],
+        # 'task_id': i,
         # output = json.loads(returnOutput)
         # returnOutput = json.dumps(returnOutput, ensure_ascii=False)
         # print(type(returnOutput))
