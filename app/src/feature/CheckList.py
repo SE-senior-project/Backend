@@ -119,6 +119,7 @@ class CheckList(object):
 
     @staticmethod
     def get_list(task_id):
+        # task_id = 1
         cursor = builder.cursor()
         sql_select_task = '''
                                                     SELECT checklist_id
@@ -149,15 +150,17 @@ class CheckList(object):
 
         if len(find_length) == 0:
             insert_list = '''
-                                         INSERT INTO CheckBoxes ( checkbox_id,list_name,status,task_id)
+                                         INSERT INTO CheckBoxes ( checkbox_id,list_name,list_description,status,task_id)
                                          VALUES
-                                         (NULL,%s,%s,%s);
+                                         (NULL,%s,%s,%s,%s);
                                          '''
             sql_update_list = '''UPDATE CheckBoxes SET list_description = %s WHERE task_id = %s'''
+            count = 0
             for i in df2['list_name']:
-                cursor.execute(insert_list, (i, 0, task_id))
-            for i in df2['list_description']:
-                cursor.execute(sql_update_list, (i, task_id))
+                cursor.execute(insert_list, (i, df2['list_description'].iloc[count], 0, task_id))
+                count = count+1
+            # for i in df2['list_description']:
+            #     cursor.execute(sql_update_list, (i, task_id))
 
             sql_CheckBoxes = '''
                                                                           SELECT *
