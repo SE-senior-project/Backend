@@ -134,6 +134,12 @@ class CheckList(object):
                 result = cursor.fetchall()
                 df = pd.DataFrame(result, columns=['checklist_id'])
                 checklist_id = int(df['checklist_id'].iloc[0])
+                # sql_select_checklist_name = '''SELECT checklist_name FROM Checklists WHERE Checklists.checklist_id =
+                # %s '''
+                # cursor.execute(sql_select_checklist_name, (checklist_id,))
+                # result_checklist_name = cursor.fetchall()
+                # dfname = pd.DataFrame(result_checklist_name, columns=['checklist_name'])
+                # print(dfname)
 
                 sql_select_list = ''' SELECT * FROM Lists WHERE Lists.checklist_id = %s '''
                 cursor.execute(sql_select_list, (checklist_id,))
@@ -142,6 +148,8 @@ class CheckList(object):
                 sql_find_length = ''' SELECT * FROM CheckBoxes WHERE CheckBoxes.task_id = %s '''
                 cursor.execute(sql_find_length, (task_id,))
                 find_length = cursor.fetchall()
+
+                # print(len(find_length))
                 if len(find_length) == 0:
                     insert_list = '''INSERT INTO CheckBoxes ( checkbox_id,list_name,list_description,status,task_id) 
                     VALUES (NULL,%s,%s,%s,%s); '''
@@ -163,11 +171,20 @@ class CheckList(object):
                     print('already has list in checkbox')
                     df3 = pd.DataFrame(find_length,
                                        columns=['checkbox_id', 'list_name', 'list_description', 'status', 'task_id'])
+                    checkStatus = []
+                    for i in df3['status']:
+                        if i == 1:
+                            checkStatus.append(i)
+                    if len(checkStatus) == len(df3['status']):
+                        df3['equal'] = "equal"
+                        # df3['task_name'] = str(dfname['checklist_name'].iloc[0]) + ' task complete'
+                    else:
+                        df3['equal'] = "not equal"
+                        # df3['task_name'] = dfname['checklist_name']
 
                     builder.commit()
                     json_result = df3.to_json(orient="records")
                     output = json.loads(json_result)
-                    print('Has this task id in database')
                     return output
             except:
                 print('Has no this task id in database')
