@@ -31,8 +31,8 @@ class InitApp:
             cursor.execute(delete_contractor)
             delete_user = '''DROP TABLE IF EXISTS Users;'''
             cursor.execute(delete_user)
-            delete_material = '''DROP TABLE IF EXISTS Materials;'''
-            cursor.execute(delete_material)
+            # delete_material = '''DROP TABLE IF EXISTS Materials;'''
+            # cursor.execute(delete_material)
             # delete_material_comparators = '''DROP TABLE IF EXISTS MaterialComparators;'''
             # cursor.execute(delete_material_comparators)
             builder.commit()
@@ -149,13 +149,13 @@ class InitApp:
                      material_type VARCHAR(255))
                      '''
             cursor.execute(material)
-            url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
+            # url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_month_regionCsi.asp'
+            url = 'http://www.indexpr.moc.go.th/PRICE_PRESENT/table_regionCsi.asp'
             payload = {
-                'DDMonth': '04',
                 'DDYear': '2565',
                 'DDProvince': '50',
                 'texttable': 'csi_price_north_web_avg',
-                'text_name': 'unit_code_N',
+                'text_unit': 'unit_code_N',
                 'B1': '%B5%A1%C5%A7'
             }
             r = requests.post(url, data=payload).content
@@ -166,7 +166,7 @@ class InitApp:
             df.drop(df.index[91:100], inplace=True)
             material_name = df[1].to_numpy()
             material_unit = df[2].to_numpy()
-            material_price = df[3].to_numpy()
+            material_price = df[15].to_numpy()
             n = len(material_name)
             insert_material = '''
                            INSERT INTO Materials (`material_name`,`material_price`,`material_unit`) VALUES (%s,%s,%s);
@@ -630,7 +630,7 @@ class InitApp:
             InitApp.build_table_user()
             InitApp.build_table_admin()
             InitApp.build_table_contractor()
-            InitApp.build_table_material()
+            # InitApp.build_table_material()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
             InitApp.build_table_task()
