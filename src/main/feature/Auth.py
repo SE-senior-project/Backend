@@ -1,4 +1,4 @@
-from app.src.config.Service import *
+from src.main.config.Service import *
 import json
 import pandas as pd
 import jwt

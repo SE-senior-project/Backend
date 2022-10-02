@@ -8,12 +8,12 @@
 
 from flask import Flask, request, jsonify
 
-from src.config.InitApp import *
-from src.feature.Auth import *
-from src.feature.Admin import *
-from src.feature.ProjectManagement import *
-from src.feature.BOQ import *
-from src.feature.CheckList import *
+from src.main.config.InitApp import *
+from src.main.feature.Auth import *
+from src.main.feature.Admin import *
+from src.main.feature.ProjectManagement import *
+from src.main.feature.BOQ import *
+from src.main.feature.CheckList import *
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -306,4 +306,4 @@ FlaskController.Build_all_table()
 if __name__ == '__main__':
     # from waitress import serve
     # serve(app, host="0.0.0.0", port=8080, debug=True)
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run()

@@ -1,5 +1,4 @@
-from app.src.config.Service import *
-import requests
+from src.main.config.Service import *
 import pandas as pd
 import json
 

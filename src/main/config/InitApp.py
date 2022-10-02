@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-from app.src.config.Service import *
+from src.main.config.Service import *
 import hashlib
 
 
@@ -31,8 +31,8 @@ class InitApp:
             cursor.execute(delete_contractor)
             delete_user = '''DROP TABLE IF EXISTS Users;'''
             cursor.execute(delete_user)
-            # delete_material = '''DROP TABLE IF EXISTS Materials;'''
-            # cursor.execute(delete_material)
+            delete_material = '''DROP TABLE IF EXISTS Materials;'''
+            cursor.execute(delete_material)
             # delete_material_comparators = '''DROP TABLE IF EXISTS MaterialComparators;'''
             # cursor.execute(delete_material_comparators)
             builder.commit()
@@ -630,7 +630,7 @@ class InitApp:
             InitApp.build_table_user()
             InitApp.build_table_admin()
             InitApp.build_table_contractor()
-            # InitApp.build_table_material()
+            InitApp.build_table_material()
             InitApp.build_table_project()
             InitApp.build_table_project_material()
             InitApp.build_table_task()

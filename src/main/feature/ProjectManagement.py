@@ -1,4 +1,4 @@
-from app.src.config.Service import *
+from src.main.config.Service import *
 import pandas as pd
 import json
 import numpy as np
@@ -321,6 +321,7 @@ class ProjectManagement(object):
     @staticmethod
     def search_result(material_name):
         cursor = builder.cursor()
+        print(material_name)
         if type(material_name) != str:
             return {
                 "message": "invalid input"
