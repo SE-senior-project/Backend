@@ -4,7 +4,7 @@ import mysql.connector
 def create_server():
     try:
         db = mysql.connector.connect(
-            host="localhost",
+            host="20.219.189.82",
             user="root",
             password="password",
             database='onemeasure'
